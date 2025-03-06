@@ -3,12 +3,18 @@ import { useNavigate } from "react-router-dom";
 import { Sparkles, Check, X } from "lucide-react";
 import confetti from "canvas-confetti";
 import Footer from "../components/Footer";
+// import Header from "../components/Header";
+import { useUserContext } from "../context/UserContext";
+import ProfilePopup from "../components/Popup";
+// import ProfilePopup from "../components/ProfilePopup";
 
 const LandingPage = () => {
   const navigate = useNavigate();
   const quizStartTime = new Date();
-  quizStartTime.setDate(22);
-  quizStartTime.setHours(11, 0, 0, 0);
+  quizStartTime.setDate(27);
+  quizStartTime.setMonth(1);
+  quizStartTime.setFullYear(2025);
+  quizStartTime.setHours(0, 0, 0, 0);
 
   const [timeLeft, setTimeLeft] = useState(getTimeRemaining());
   const [isTimeUp, setIsTimeUp] = useState(false);
@@ -20,6 +26,9 @@ const LandingPage = () => {
   const [answerStatus, setAnswerStatus] = useState(null);
   const [numberGuess, setNumberGuess] = useState("");
 
+  const [showPopup, setShowPopup] = useState(false);
+
+  const { user } = useUserContext();
   const [numberGuessStatus, setNumberGuessStatus] = useState(null);
   const [gameWins, setGameWins] = useState({
     quiz: false,
@@ -228,176 +237,193 @@ const LandingPage = () => {
     }
   };
 
+  const handlePravesh = () => {
+    // console.log("PRAVESHED");
+    // console.log("---", user.isProfileCompleted)
+    if (!user.isProfileCompleted) {
+      setShowPopup(true);
+
+      // {
+      //   showPopup && <ProfilePopup onClose={() => setShowPopup(false)} />;
+      // }
+    } else {
+      navigate("/greed-quiz-hunt-00");
+    }
+  };
   return (
-    <div className="w-full min-h-screen bg-gradient-to-r from-gray-800 to-gray-950 text-white">
-      <div className="border-l-5 border-purple-700 h-full">
-        <div className="text-center p-8 relative">
-          <h1 className="text-5xl font-bold mb-4 text-purple-500 animate-none">
-            {/* संस्कृत प्रश्नोत्तरी */}
-            भारतीय मूल परंपरा एवं नैततक शिक्षा
-          </h1>
-          {/* <p className="text-2xl mb-2 text-purple-500">
+    <>
+      {/* <Header /> */}
+      <div className="w-full min-h-screen bg-gradient-to-r from-gray-800 to-gray-950 text-white">
+        <div className="h-full">
+          <div className="text-center p-8 relative">
+            <h1 className="text-5xl font-bold mb-4 text-purple-500 animate-none">
+              {/* संस्कृत प्रश्नोत्तरी */}
+              भारतीय मूल परंपरा एवं नैतिक शिक्षा
+            </h1>
+            {/* <p className="text-2xl mb-2 text-purple-500">
             Sanskrit Knowledge Quest
           </p> */}
-        </div>
+          </div>
 
-        <div className="flex justify-center mb-8">
-          <div className="bg-gradient-to-r from-gray-800 to-gray-950 p-6 rounded-lg shadow-lg backdrop-blur-sm w-auto">
-            <div className="text-2xl font-semibold text-purple-500">
-              परीक्षा प्रारम्भः
-            </div>
-            <div className="text-xl text-center text-purple-400 animate-pulse">
-              {timeLeft.days}d {timeLeft.hours}h {timeLeft.minutes}m{" "}
-              {timeLeft.seconds}s
+          <div className="flex justify-center mb-8">
+            <div className="bg-gradient-to-r from-gray-800 to-gray-950 p-6 rounded-lg shadow-lg backdrop-blur-sm w-auto">
+              <div className="text-2xl font-semibold text-purple-500">
+                परीक्षा प्रारम्भः
+              </div>
+              <div className="text-xl text-center text-purple-400 animate-pulse">
+                {timeLeft.days}d {timeLeft.hours}h {timeLeft.minutes}m{" "}
+                {timeLeft.seconds}s
+              </div>
             </div>
           </div>
-        </div>
 
-        <div className="max-w-6xl mx-auto p-4 grid grid-cols-1 md:grid-cols-3 gap-4">
-          {/* Sanskrit MCQ Quiz */}
-          <div className="bg-gray-800/50 p-6 rounded-lg shadow-lg backdrop-blur-sm border-t-4 border-t-purple-700 border-b-4 border-b-purple-700">
-            <h3 className="text-xl font-bold mb-4 text-center text-purple-500">
-              Sanskrit Word Quiz
-            </h3>
-            {!gameWins.quiz ? (
-              <div className="space-y-4">
-                <p className="text-3xl text-center mb-2 text-purple-600 font-bold">
-                  {sanskritQuestions[currentQuestionIndex].word}
-                </p>
-                <p className="text-sm mb-4 text-purple-500">
-                  {sanskritQuestions[currentQuestionIndex].question}
-                </p>
-                <div className="space-y-2">
-                  {sanskritQuestions[currentQuestionIndex].options.map(
-                    (option, index) => (
-                      <button
-                        key={index}
-                        onClick={() => handleAnswerSelect(index)}
-                        disabled={selectedAnswer !== null}
-                        className={`cursor-pointer w-full p-3 hover:bg-purple-600 rounded transition-all duration-300 ${
-                          selectedAnswer === index
-                            ? answerStatus
-                              ? "bg-green-500 text-white"
-                              : "bg-red-500 text-white"
-                            : "bg-gray-700 hover:bg-gray-600"
-                        } ${
-                          selectedAnswer !== null &&
-                          index ===
-                            sanskritQuestions[currentQuestionIndex].correct
-                            ? "ring-2 ring-green-500"
-                            : ""
-                        }`}
-                      >
-                        {option}
-                        {selectedAnswer === index && (
-                          <span className="ml-2">
-                            {answerStatus ? (
-                              <Check className="inline" />
-                            ) : (
-                              <X className="inline" />
-                            )}
-                          </span>
-                        )}
-                      </button>
-                    )
-                  )}
+          <div className="max-w-6xl mx-auto p-4 grid grid-cols-1 md:grid-cols-3 gap-4">
+            {/* Sanskrit MCQ Quiz */}
+            <div className="bg-gray-800/50 p-6 rounded-lg shadow-lg backdrop-blur-sm border-t-4 border-t-purple-700 border-b-4 border-b-purple-700">
+              <h3 className="text-xl font-bold mb-4 text-center text-purple-500">
+                Sanskrit Word Quiz
+              </h3>
+              {!gameWins.quiz ? (
+                <div className="space-y-4">
+                  <p className="text-3xl text-center mb-2 text-purple-600 font-bold">
+                    {sanskritQuestions[currentQuestionIndex].word}
+                  </p>
+                  <p className="text-sm mb-4 text-purple-500">
+                    {sanskritQuestions[currentQuestionIndex].question}
+                  </p>
+                  <div className="space-y-2">
+                    {sanskritQuestions[currentQuestionIndex].options.map(
+                      (option, index) => (
+                        <button
+                          key={index}
+                          onClick={() => handleAnswerSelect(index)}
+                          disabled={selectedAnswer !== null}
+                          className={`cursor-pointer w-full p-3 hover:bg-purple-600 rounded transition-all duration-300 ${
+                            selectedAnswer === index
+                              ? answerStatus
+                                ? "bg-green-500 text-white"
+                                : "bg-red-500 text-white"
+                              : "bg-gray-700 hover:bg-gray-600"
+                          } ${
+                            selectedAnswer !== null &&
+                            index ===
+                              sanskritQuestions[currentQuestionIndex].correct
+                              ? "ring-2 ring-green-500"
+                              : ""
+                          }`}
+                        >
+                          {option}
+                          {selectedAnswer === index && (
+                            <span className="ml-2">
+                              {answerStatus ? (
+                                <Check className="inline" />
+                              ) : (
+                                <X className="inline" />
+                              )}
+                            </span>
+                          )}
+                        </button>
+                      )
+                    )}
+                  </div>
                 </div>
-              </div>
-            ) : (
-              <div className="text-center text-green-400">
-                <Sparkles className="inline-block mb-2" />
-                <p>Quiz Completed!</p>
-              </div>
-            )}
-          </div>
-
-          {/* Memory Game */}
-          <div className="bg-gray-800/50 p-6 rounded-lg shadow-lg backdrop-blur-sm border-t-4 border-t-purple-700 border-b-4 border-b-purple-700">
-            <h3 className="text-xl font-bold mb-4 text-center text-purple-500">
-              Sanskrit Memory
-            </h3>
-            <div className="grid grid-cols-4 gap-2">
-              {memoryCards.map((card, index) => (
-                <button
-                  key={card.uniqueId}
-                  onClick={() => handleCardClick(index)}
-                  disabled={gameWins.memory}
-                  className={`cursor-pointer h-12 w-12 hover:bg-purple-600 rounded transition-all duration-300 ${
-                    flippedCards.includes(index) ||
-                    matchedPairs.includes(card.id)
-                      ? "bg-purple-600"
-                      : "bg-gray-700 hover:bg-gray-600"
-                  }`}
-                >
-                  {(flippedCards.includes(index) ||
-                    matchedPairs.includes(card.id)) &&
-                    card.content}
-                </button>
-              ))}
+              ) : (
+                <div className="text-center text-green-400">
+                  <Sparkles className="inline-block mb-2" />
+                  <p>Quiz Completed!</p>
+                </div>
+              )}
             </div>
-            {gameWins.memory && (
-              <div className="text-center mt-4 text-green-400">
-                <Sparkles className="inline-block mb-2" />
-                <p>Memory Game Completed!</p>
+
+            {/* Memory Game */}
+            <div className="bg-gray-800/50 p-6 rounded-lg shadow-lg backdrop-blur-sm border-t-4 border-t-purple-700 border-b-4 border-b-purple-700">
+              <h3 className="text-xl font-bold mb-4 text-center text-purple-500">
+                Sanskrit Memory
+              </h3>
+              <div className="grid grid-cols-4 gap-2">
+                {memoryCards.map((card, index) => (
+                  <button
+                    key={card.uniqueId}
+                    onClick={() => handleCardClick(index)}
+                    disabled={gameWins.memory}
+                    className={`cursor-pointer h-12 w-12 hover:bg-purple-600 rounded transition-all duration-300 ${
+                      flippedCards.includes(index) ||
+                      matchedPairs.includes(card.id)
+                        ? "bg-purple-600"
+                        : "bg-gray-700 hover:bg-gray-600"
+                    }`}
+                  >
+                    {(flippedCards.includes(index) ||
+                      matchedPairs.includes(card.id)) &&
+                      card.content}
+                  </button>
+                ))}
               </div>
-            )}
+              {gameWins.memory && (
+                <div className="text-center mt-4 text-green-400">
+                  <Sparkles className="inline-block mb-2" />
+                  <p>Memory Game Completed!</p>
+                </div>
+              )}
+            </div>
+
+            {/* Number Guessing Game */}
+            <div className="bg-gray-800/50 p-6 rounded-lg shadow-lg backdrop-blur-sm border-t-4 border-t-purple-700 border-b-4 border-b-purple-700">
+              <h3 className="text-xl font-bold mb-4 text-center text-purple-500">
+                Guess the Sanskrit Number
+              </h3>
+              {!gameWins.number ? (
+                <div className="space-y-4">
+                  <p className="text-2xl text-center mb-4 text-purple-500 font-bold">
+                    {targetNumber}
+                  </p>
+                  <input
+                    type="text"
+                    value={numberGuess}
+                    onChange={(e) => setNumberGuess(e.target.value)}
+                    className={`w-full p-2 rounded transition-colors duration-300 ${
+                      numberGuessStatus === null
+                        ? "bg-gray-700 border-l-3 border-l-purple-700"
+                        : numberGuessStatus
+                        ? "bg-green-500/20 border-green-500"
+                        : "bg-red-500/20 border-red-500"
+                    } text-white`}
+                    placeholder="Type the number in Sanskrit..."
+                  />
+                  <button
+                    onClick={handleNumberGuess}
+                    className="w-full py-2 bg-purple-600 hover:bg-purple-700 rounded cursor-pointer"
+                  >
+                    Check
+                  </button>
+                </div>
+              ) : (
+                <div className="text-center text-green-400">
+                  <Sparkles className="inline-block mb-2" />
+                  <p>Number Game Completed!</p>
+                </div>
+              )}
+            </div>
           </div>
 
-          {/* Number Guessing Game */}
-          <div className="bg-gray-800/50 p-6 rounded-lg shadow-lg backdrop-blur-sm border-t-4 border-t-purple-700 border-b-4 border-b-purple-700">
-            <h3 className="text-xl font-bold mb-4 text-center text-purple-500">
-              Guess the Sanskrit Number
-            </h3>
-            {!gameWins.number ? (
-              <div className="space-y-4">
-                <p className="text-2xl text-center mb-4 text-purple-500 font-bold">
-                  {targetNumber}
-                </p>
-                <input
-                  type="text"
-                  value={numberGuess}
-                  onChange={(e) => setNumberGuess(e.target.value)}
-                  className={`w-full p-2 rounded transition-colors duration-300 ${
-                    numberGuessStatus === null
-                      ? "bg-gray-700 border-l-3 border-l-purple-700"
-                      : numberGuessStatus
-                      ? "bg-green-500/20 border-green-500"
-                      : "bg-red-500/20 border-red-500"
-                  } text-white`}
-                  placeholder="Type the number in Sanskrit..."
-                />
-                <button
-                  onClick={handleNumberGuess}
-                  className="w-full py-2 bg-purple-600 hover:bg-purple-700 rounded cursor-pointer"
-                >
-                  Check
-                </button>
-              </div>
-            ) : (
-              <div className="text-center text-green-400">
-                <Sparkles className="inline-block mb-2" />
-                <p>Number Game Completed!</p>
-              </div>
-            )}
+          <div className="text-center mt-8 pb-8">
+            <button
+              onClick={handlePravesh}
+              disabled={!isTimeUp}
+              className={`cursor-pointer px-8 py-4 text-xl font-bold rounded-lg transition-all duration-300 shadow-lg ${
+                isTimeUp
+                  ? "bg-gradient-to-r from-purple-500 to-purple-950 hover:bg-purple-700 border-l-4 border-l-purple-800 text-white"
+                  : "bg-gray-600 cursor-not-allowed"
+              }`}
+            >
+              {isTimeUp ? "प्रवेश करें" : "पंजीकरण शीघ्र"}
+            </button>
+            {showPopup && <ProfilePopup onClose={() => setShowPopup(false)} />}
           </div>
         </div>
-
-        <div className="text-center mt-8 pb-8">
-          <button
-            onClick={() => navigate("/get-in")}
-            disabled={!isTimeUp}
-            className={`cursor-pointer px-8 py-4 text-xl font-bold rounded-lg transition-all duration-300 shadow-lg ${
-              isTimeUp
-                ? "bg-gradient-to-r from-purple-500 to-purple-950 hover:bg-purple-700 border-l-4 border-l-purple-800 text-white"
-                : "bg-gray-600 cursor-not-allowed"
-            }`}
-          >
-            {isTimeUp ? "प्रवेश करें" : "पंजीकरण शीघ्र"}
-          </button>
-        </div>
+        <Footer />
       </div>
-      <Footer />
-    </div>
+    </>
   );
 };
 

@@ -1,58 +1,218 @@
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 // import apiU from "../services/api.js";
 import { apiUser } from "../services/api.js";
+import Loader from "../components/Loader.jsx";
 const UserContext = createContext();
 
 export const useUserContext = () => useContext(UserContext);
 
 export const UserProvider = ({ children }) => {
   const [isRegistered, setIsRegistered] = useState(false);
-  const [idError, setIdError] = useState("");
   const [user, setUser] = useState(null);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [loading, setLoading] = useState(true);
 
-  const registerUSer = async (
-    { name, email, phone, rollNumber, enrollmentNumber, section },
-    deviceId
-  ) => {
+  // ✅ Fetch user from backend on refresh
+  useEffect(() => {
+    const fetchUser = async () => {
+      setLoading(true); // ✅ Start loading
+      try {
+        const response = await apiUser.get("/getUser");
+        // console.log("getUserResponseContext:\n", response);
+        // console.log("getUserResponseContext:\n", response.data.user);
+        // console.log("getUserResponseContext:\n", response.data.user.isVerified);
+        setUser(response.data.user);
+        setIsAuthenticated(response.data.user.isVerified);
+      } catch (error) {
+        console.error("UC-UE-UgE:", error);
+        setUser(null);
+        setIsAuthenticated(false);
+        if (error.response?.status === 401) {
+          // console.log("🔄 Trying Token Refresh Before Fetching User Again...");
+
+          try {
+            await apiUser.post("/refreshToken", {}, { withCredentials: true });
+
+            // ✅ Retry getting user after refreshing token
+            const retryResponse = await apiUser.get("/getUser", {
+              withCredentials: true,
+            });
+            setUser(retryResponse.data);
+          } catch (refreshError) {
+            console.error("❌ rF. LgU.");
+            setUser(null);
+          }
+        }
+      } finally {
+        setLoading(false); // ✅ Ensure loading is false after API call
+      }
+    };
+
+    fetchUser();
+  }, []);
+
+
+  const registerUser = async ({
+    username,
+    fullName,
+    email,
+    phone,
+    password,
+  }) => {
     try {
-      // console.log(
-      //   name,
-      //   email,
-      //   phone,
-      //   rollNumber,
-      //   enrollmentNumber,
-      //   section,
-      //   deviceId
-      // );
-      const response = await apiUser.post("/register", {
-        name,
+      const fields = { username, fullName, email, phone, password };
+      // console.log("fields userContext:\n", fields);
+      const registerResponse = await apiUser.post("/register", {
+        username,
+        fullName,
         email,
         phone,
-        rollNumber,
-        enrollmentNumber,
-        section,
-        deviceId,
+        password,
       });
-      // console.log("UserResponse..\n------------------\n", response);
-      // console.log("UserResponse..\n------------------\n", response.data.user);
-      // console.log(
-      //   "UserResponse..is registered\n------------------\n",
-      //   response.data.user.isRegisteredUSer
-      // );
-      setIsRegistered(response.data.user.isRegisteredUSer);
-      setUser(response.data.user);
-      // setIsRegisteredUser(response.data.user.isRegisteredUSer);
-      // console.log("USer..\n", user);
-      // console.log("USer..\n", { user });
-      return response.data.user;
+
+      // console.log("registerResponse userContext:\n", registerResponse.data);
+      registerResponse?.data?.user
+        ? setUser(registerResponse.data.user)
+        : setUser(null);
+      return registerResponse.data;
     } catch (error) {
-      // console.error("Error u", error);
-      // console.error("Error u", error.response.data.message);
-      // console.error("Error u", error.response.data.existingDeviceIdUser);
-      setIdError(error.response.data.message);
-      setUser(error.response.data.existingDeviceIdUser);
-      // setIsRegisteredUser(false);
-      return error.response.data.existingDeviceIdUser;
+      console.error("Uc-rE:\n", error);
+      throw error.response?.data || { message: "Failed to register user" };
+      // return error.response.data.message;
+    }
+  };
+
+  const loginUser = async ({ usernameORemail, password }) => {
+    try {
+      const fields = { usernameORemail, password };
+      // console.log("fields userContext:\n", fields);
+      const loginResponse = await apiUser.post("/login", {
+        usernameORemail,
+        password,
+      });
+
+      // console.log("loginResponse userContext:\n", loginResponse.data);
+      loginResponse?.data?.user
+        ? setUser(loginResponse.data.user)
+        : setUser(null);
+      return loginResponse.data;
+    } catch (error) {
+      console.error("Uc-lgE:\n", error);
+      throw error.response?.data || { message: "Failed to register user" };
+      // return error.response.data.message;
+    }
+  };
+
+  const sendOtp = async ({ email }) => {
+    try {
+      // console.log("fields userContext:\n", email);
+      const otpResponse = await apiUser.post("/sendOtp", {
+        email,
+      });
+
+      // console.log("otpResponse userContext:\n", otpResponse.data);
+      return otpResponse.data;
+    } catch (error) {
+      console.error("Uc-OtE:\n", error);
+      throw error.response?.data || { message: "Failed to register user" };
+      // return error.response.data.message;
+    }
+  };
+
+  const verifyOtp = async ({ email, otp }) => {
+    try {
+      // console.log("fields userContext:\n", email, Number(otp), typeof otp);
+      const verificationResponse = await apiUser.post("/verifyOtp", {
+        email,
+        otp,
+      });
+
+      // console.log(
+      //   "verificationResponse userContext:\n",
+      //   verificationResponse.data
+      // );
+      setUser(verificationResponse.data.user);
+      setIsAuthenticated(verificationResponse.data.user.isVerified);
+      return verificationResponse.data;
+    } catch (error) {
+      console.error("Uc-verRE:\n", error);
+      throw error.response?.data || { message: "Failed to register user" };
+      // return error.response.data.message;
+    }
+  };
+
+  const logoutUser = async () => {
+    try {
+      const logoutResponse = await apiUser.post("/logout");
+
+      // console.log("logoutResponse userContext:\n", logoutResponse.data);
+      setUser(null);
+      setIsAuthenticated(false);
+      return logoutResponse.data;
+    } catch (error) {
+      console.error("Uc-logRE:\n", error);
+      throw error.response?.data || { message: "Failed to register user" };
+      // return error.response.data.message;
+    }
+  };
+
+  const completeUserProfile = async ({
+    username,
+    fullName,
+    email,
+    phone,
+    gender,
+    studyLevel,
+    schoolName,
+    standard,
+    rollNumber,
+    collegeName,
+    course,
+    semester,
+    enrollmentNumber,
+  }) => {
+    try {
+      const fields = {
+        username,
+        fullName,
+        email,
+        phone,
+        gender,
+        studyLevel,
+        schoolName,
+        standard,
+        rollNumber,
+        collegeName,
+        course,
+        semester,
+        enrollmentNumber,
+      };
+      // console.log("fields userContext:\n", fields);
+      const completeUserResponse = await apiUser.post("/completeProfile", {
+        username,
+        fullName,
+        email,
+        phone,
+        gender,
+        studyLevel,
+        schoolName,
+        standard,
+        rollNumber,
+        collegeName,
+        course,
+        semester,
+        enrollmentNumber,
+      });
+
+      // console.log(
+      //   "completeUserProfileResponse userContext:\n",
+      //   completeUserResponse.data
+      // );
+      return completeUserResponse.data;
+    } catch (error) {
+      console.error("Uc-CUPe:\n", error);
+      throw error.response?.data || { message: "Failed to Update user" };
+      // return error.response.data.message;
     }
   };
 
@@ -64,8 +224,8 @@ export const UserProvider = ({ children }) => {
       // console.log("REsponse update marks..\n", response);
       return response;
     } catch (error) {
-      // console.error("Error upM..\n", error);
-      setIdError(error.response.data.message);
+      console.error("Error upM..\n", error);
+
       return error;
     }
   };
@@ -76,25 +236,34 @@ export const UserProvider = ({ children }) => {
       // console.log("GetUSersResponse..\n", response);
       return response;
     } catch (error) {
-      // console.error("Error gtU..\n", error);
+      console.error("Error gtU..\n", error);
       return error.response.data.message;
-      return error;
+   
     }
   };
 
   return (
     <UserContext.Provider
       value={{
-        registerUSer,
+        registerUser,
+        loginUser,
+        sendOtp,
+        verifyOtp,
+        logoutUser,
+        completeUserProfile,
         getUsers,
         updateMarks,
         isRegistered,
-        setIsRegistered,
         user,
-        idError,
+        setUser,
+        isAuthenticated,
+        loading,
+
+        setIsRegistered,
+        // user,
       }}
     >
-      {children}
+      {!loading ? children : <Loader />} {/* ✅ Show Loader until done */}
     </UserContext.Provider>
   );
 };

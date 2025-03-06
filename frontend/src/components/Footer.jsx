@@ -82,8 +82,8 @@ import deviImage from "/Complete-hands.png";
 
 const Footer = () => {
   return (
-    <footer className="bg-gradient-to-b from-gray-900 to-gray-950 border-t border-gray-800">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <footer className="bg-black">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 border-t border-t-yellow-500">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
           {/* About Section */}
           <div className="space-y-4 flex flex-col items-center justify-center text-center">

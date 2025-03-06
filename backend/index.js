@@ -5,7 +5,7 @@ import connectDB from "./database/dbConnection.js";
 connectDB()
     .then(() => {
         app.listen(process.env.PORT || 8000, () => {
-            console.log("SERVER IS LISTENING AT PORT : ", process.env.PORT);
+            console.log("SERVER IS LISTENING AT PORT : ");
 
         });
     })

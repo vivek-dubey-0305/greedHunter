@@ -2,8 +2,9 @@ import express from "express";
 import { config } from "dotenv";
 import cors from "cors";
 import userRouter from "./routes/user.route.js";
-import quizRouter from "./routes/quiz.route.js";
+import adminRouter from "./routes/admin.route.js";
 import { errorMiddleware } from "./middleware/error.middleware.js";
+import cookieParser from "cookie-parser";
 
 
 
@@ -33,10 +34,12 @@ app.use(cors({
     credentials: true
 }));
 
+app.use(cookieParser());
 
 
 app.use("/api/v1/users", userRouter)
-app.use("/api/v1/quiz", quizRouter)
+// app.use("/api/v1/quiz", quizRouter)
+app.use("/api/v1/admin", adminRouter)
 
 app.use(errorMiddleware)
 

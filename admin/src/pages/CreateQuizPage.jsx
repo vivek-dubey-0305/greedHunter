@@ -1,8 +1,7 @@
 import { useState } from "react";
-import axios from "axios";
-import { useQuizContext } from "../context/QuizContext";
+import { useAdminContext } from "../context/AdminContext";
 
-const QuizForm = () => {
+const CreateQuizPage = () => {
   const [question, setQuestion] = useState("");
   const [options, setOptions] = useState(["", ""]); // At least 2 options
   const [correctOption, setCorrectOption] = useState(null);
@@ -10,7 +9,7 @@ const QuizForm = () => {
   const [pwd, setPwd] = useState("");
   const [isAdmin, setIsAdmin] = useState(false);
 
-  const { getQuestion } = useQuizContext();
+  const { createQuiz } = useAdminContext();
 
   // Add new option field
   const addOption = () => {
@@ -64,7 +63,7 @@ const QuizForm = () => {
     // const quizData = { question, options, correctOption };
 
     try {
-      const responseQuiz = await getQuestion(question, options, correctOption);
+      const responseQuiz = await createQuiz(question, options, correctOption);
       //   const response = await axios.post("/postquizQuestions", quizData);
       // console.log(responseQuiz)
       setMessage(
@@ -185,4 +184,4 @@ const QuizForm = () => {
   );
 };
 
-export default QuizForm;
+export default CreateQuizPage;

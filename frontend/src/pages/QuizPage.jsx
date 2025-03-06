@@ -27,6 +27,7 @@ const QuizPage = () => {
   const [score, setScore] = useState(0);
   const [animate, setAnimate] = useState(false);
   // const [isRegistered, setIsRegistered] = useState(true);
+  const [idError, setIdError] = useState("Hello");
 
   const { getquizQuestions } = useQuizContext();
 
@@ -34,7 +35,7 @@ const QuizPage = () => {
 
   // const { user, isRegistered, setIsRegistered } = useUserContext();
 
-  const { user, updateMarks, isRegistered, setIsRegistered, idError } =
+  const { user, updateMarks, isAuthenticated, setIsRegistered } =
     useUserContext();
   // Fetch quiz questions from backend
   useEffect(() => {
@@ -43,7 +44,7 @@ const QuizPage = () => {
         const response = await getquizQuestions();
         // const response = await axios.get("/getquizQuestions");
         // console.log("response..\n-----------\n", response.data.questions);
-        setQuestions(response.data.questions);
+        setQuestions(response.data.quizData);
         // console.log("USER...\n-----\n", user);
       } catch (error) {
         console.error("E-FQQ-49", error);
@@ -140,11 +141,11 @@ const QuizPage = () => {
 
   return (
     <>
-      {isRegistered && !idError ? (
+      {isAuthenticated ? (
         <div className="w-full min-h-screen flex flex-col items-center bg-gradient-to-r from-gray-800 to-gray-950">
           {/* Quiz Rules Section */}
           {!rulesAccepted && (
-            <div className="w-full min-h-screen bg-gray-900 flex items-center justify-center p-4">
+            <div className="w-full min-h-screen   bg-gray-900 flex items-center justify-center p-4">
               <div className="max-w-lg w-full p-8 bg-gradient-to-r from-gray-900 to-gray-950 shadow-2xl rounded-xl text-center border border-l-4 border-l-purple-700 transform hover:scale-[1.02] transition-transform duration-300 animate-fadeIn">
                 <div className="flex items-center justify-center mb-6">
                   <Award className="w-10 h-10 text-purple-500 animate-pulse" />
