@@ -27,34 +27,34 @@ const UserForm = () => {
   useEffect(() => {
     const canvas = canvasRef.current;
     const ctx = canvas.getContext("2d");
-    
+
     // Set canvas to full window size
     const setCanvasSize = () => {
       canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
     };
-    
+
     window.addEventListener("resize", setCanvasSize);
     setCanvasSize();
-    
+
     // Particle settings
-    const particleCount =500;
+    const particleCount = 500;
     const particles = [];
     const connectionDistance = 150;
     const mouseRadius = 150;
-    
+
     // Mouse position
     let mouse = {
       x: null,
       y: null,
-      radius: mouseRadius
+      radius: mouseRadius,
     };
-    
+
     window.addEventListener("mousemove", (event) => {
       mouse.x = event.x;
       mouse.y = event.y;
     });
-    
+
     // Particle class
     class Particle {
       constructor() {
@@ -64,12 +64,12 @@ const UserForm = () => {
         this.speedX = Math.random() * 1 - 0.5;
         this.speedY = Math.random() * 1 - 0.5;
       }
-      
+
       update() {
         // Move particles
         this.x += this.speedX;
         this.y += this.speedY;
-        
+
         // Bounce off edges
         if (this.x > canvas.width || this.x < 0) {
           this.speedX = -this.speedX;
@@ -77,24 +77,24 @@ const UserForm = () => {
         if (this.y > canvas.height || this.y < 0) {
           this.speedY = -this.speedY;
         }
-        
+
         // Move away from mouse
         if (mouse.x != null && mouse.y != null) {
           const dx = mouse.x - this.x;
           const dy = mouse.y - this.y;
           const distance = Math.sqrt(dx * dx + dy * dy);
-          
+
           if (distance < mouse.radius) {
             const angle = Math.atan2(dy, dx);
             const pushX = -Math.cos(angle);
             const pushY = -Math.sin(angle);
-            
+
             this.speedX += pushX * 0.2;
             this.speedY += pushY * 0.2;
           }
         }
       }
-      
+
       draw() {
         ctx.beginPath();
         ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
@@ -102,14 +102,14 @@ const UserForm = () => {
         ctx.fill();
       }
     }
-    
+
     // Initialize particles
     const init = () => {
       for (let i = 0; i < particleCount; i++) {
         particles.push(new Particle());
       }
     };
-    
+
     // Connect particles with lines
     const connect = () => {
       for (let i = 0; i < particles.length; i++) {
@@ -117,7 +117,7 @@ const UserForm = () => {
           const dx = particles[i].x - particles[j].x;
           const dy = particles[i].y - particles[j].y;
           const distance = Math.sqrt(dx * dx + dy * dy);
-          
+
           if (distance < connectionDistance) {
             const opacity = 1 - distance / connectionDistance;
             ctx.strokeStyle = `rgba(128, 0, 255, ${opacity * 0.4})`;
@@ -130,23 +130,23 @@ const UserForm = () => {
         }
       }
     };
-    
+
     // Animation loop
     const animate = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-      
+
       for (let i = 0; i < particles.length; i++) {
         particles[i].update();
         particles[i].draw();
       }
-      
+
       connect();
       requestAnimationFrame(animate);
     };
-    
+
     init();
     animate();
-    
+
     // Cleanup
     return () => {
       window.removeEventListener("resize", setCanvasSize);
@@ -177,7 +177,7 @@ const UserForm = () => {
           });
 
       toast.success(submitResponse.message);
-      isLogin ? navigate("/dashboard") : navigate("/sotp");
+      isLogin ? navigate("/") : navigate("/sotp");
     } catch (err) {
       toast.error(err.message || "Something went wrong!");
       if (err?.duplicateField) setErrorField(err.duplicateField);
@@ -238,7 +238,9 @@ const UserForm = () => {
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.5 }}
                 className={`w-full p-2 bg-gradient-to-br from-gray-700 to-gray-950 text-white border-b-4 ${
-                  errorField === "email" ? "border-red-600" : "border-yellow-500"
+                  errorField === "email"
+                    ? "border-red-600"
+                    : "border-yellow-500"
                 } rounded-md focus:outline-none`}
                 type="email"
                 name="email"
@@ -251,7 +253,9 @@ const UserForm = () => {
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.5 }}
                 className={`w-full p-2 bg-gradient-to-br from-gray-700 to-gray-950 text-white border-b-4 ${
-                  errorField === "phone" ? "border-red-600" : "border-yellow-500"
+                  errorField === "phone"
+                    ? "border-red-600"
+                    : "border-yellow-500"
                 } rounded-md focus:outline-none`}
                 type="number"
                 name="phone"
@@ -314,7 +318,9 @@ const UserForm = () => {
           </motion.button>
         </form>
 
-        {showPopup && <ForgetPasswordPopup onClose={() => setShowPopup(false)} />}
+        {showPopup && (
+          <ForgetPasswordPopup onClose={() => setShowPopup(false)} />
+        )}
 
         <motion.p
           initial={{ opacity: 0 }}
@@ -336,8 +342,6 @@ const UserForm = () => {
 };
 
 export default UserForm;
-
-
 
 // import React, { useState } from "react";
 // import { useUserContext } from "../context/UserContext";

@@ -134,7 +134,7 @@ const Dashboard = () => {
   };
 
   return (
-    <div className="min-h-[630px] flex bg-black text-white overflow-hidden">
+    <div className="min-h-screen flex bg-black text-white overflow-hidden">
       {/* Left Sidebar */}
       <motion.aside
         initial="open"
