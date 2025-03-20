@@ -1,83 +1,4 @@
-// import { Instagram, Mail, Phone } from "lucide-react";
-
-// const Footer = () => {
-//   return (
-//     <>
-//       <footer className="bg-gray-900 text-white py-6 mt-10">
-//         <div className="container mx-auto flex flex-col items-center justify-center gap-4">
-//           {/* Animated Name */}
-//           <p className="text-lg font-semibold text-yellow-300 animate-glow">
-//             ༄✽ȺẞℏᎥຮꫝⅇҟ 𝒟ʊƄℯყ✽࿐
-//           </p>
-
-//           {/* Social Links */}
-//           <div className="flex gap-6">
-//             {/* Instagram */}
-//             <a
-//               href="https://instagram.com/mrityunjay.elite"
-//               target="_blank"
-//               rel="noopener noreferrer"
-//               className="flex items-center gap-2 text-gray-400 transition-transform transform hover:scale-110 group"
-//             >
-//               <Instagram className="text-pink-500 animate-glow-insta" size={24} />
-//               <span className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 text-pink-500 font-semibold">
-//                 Instagram
-//               </span>
-//             </a>
-
-//             {/* Email */}
-//             <a
-//               href="mailto:mrityunjay.elite@gmail.com"
-//               className="flex items-center gap-2 text-gray-400 transition-transform transform hover:scale-110 group"
-//             >
-//               <Mail className="text-blue-500 animate-glow-mail" size={24} />
-//               <span className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 text-blue-500 font-semibold">
-//                 Email
-//               </span>
-//             </a>
-
-//             {/* Phone */}
-//             <a className="flex items-center gap-2 text-gray-400 transition-transform transform hover:scale-110 group">
-//               <Phone className="text-green-500 animate-glow-phone" size={24} />
-//               <span className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 text-green-500 font-semibold">
-//                 +91 975-436-9306
-//               </span>
-//             </a>
-//           </div>
-//         </div>
-//       </footer>
-
-//       {/* Style Section (Outside JSX) */}
-//       <style>
-//         {`
-//           @keyframes glow {
-//             0%, 100% { text-shadow: 0 0 5px rgba(255, 255, 255, 0.8); }
-//             50% { text-shadow: 0 0 10px rgba(255, 255, 255, 1); }
-//           }
-
-//           .animate-glow-insta {
-//             animation: glow 1.5s infinite alternate ease-in-out;
-//             text-shadow: 0 0 5px #ff1493, 0 0 15px #ff69b4;
-//           }
-
-//           .animate-glow-mail {
-//             animation: glow 1.5s infinite alternate ease-in-out;
-//             text-shadow: 0 0 5px #1e90ff, 0 0 15px #4682b4;
-//           }
-
-//           .animate-glow-phone {
-//             animation: glow 1.5s infinite alternate ease-in-out;
-//             text-shadow: 0 0 5px #32cd32, 0 0 15px #00ff00;
-//           }
-//         `}
-//       </style>
-//     </>
-//   );
-// };
-
-// export default Footer;
-
-import { Instagram, Mail, Phone, Mountain, Linkedin } from "lucide-react";
+import { Instagram, Mail, Phone, Mountain, Linkedin, HelpCircle, Users, FileText, Heart } from "lucide-react";
 import deviImage from "/Complete-hands.png";
 
 const Footer = () => {
@@ -110,14 +31,14 @@ const Footer = () => {
             </h3>
             <div className="space-y-3">
               <a
-                href="mailto:mrityunjay.elite@gmail.com"
+                href="mailto:hunter@greedhunter.com"
                 className="flex items-center gap-3 group"
               >
                 <span className="p-3 bg-gray-800 rounded-full group-hover:bg-blue-500 transition-colors">
                   <Mail className="h-6 w-6 text-white" />
                 </span>
                 <span className="text-gray-300 group-hover:text-blue-500 transition-colors">
-                  mrityunjay.elite@gmail.com
+                  hunter@greedhunter.com
                 </span>
               </a>
               <div className="flex items-center gap-3 group">
@@ -136,7 +57,7 @@ const Footer = () => {
             <h3 className="text-lg font-semibold text-purple-300 mb-4">
               Social Connect
             </h3>
-            <div className="flex gap-4">
+            <div className="flex flex-col gap-3">
               <a
                 href="https://instagram.com/mrityunjay.elite"
                 target="_blank"
@@ -151,22 +72,56 @@ const Footer = () => {
                 </span>
               </a>
               {/* <a
-                href="https://instagram.com/mrityunjay.elite"
+                href="https://linkedin.com"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="p-3 bg-gray-800 rounded-full hover:bg-gradient-to-tr from-pink-500 to-purple-600 transition-all transform hover:scale-105"
+                className="flex items-center gap-3 group"
               >
-                <Instagram className="h-6 w-6 text-white" />
-                <span className="inline-block">mrityunjay.elite</span>
-              </a> */}
-              {/* <a
-                href="#"
-                className="p-3 bg-gray-800 rounded-full hover:bg-gradient-to-tr from-blue-500 to-cyan-600 transition-all transform hover:scale-105"
-              >
-                <Linkedin className="h-6 w-6 text-white" />
+                <span className="p-3 bg-gray-800 rounded-full group-hover:bg-gradient-to-tr from-blue-500 to-cyan-600 transition-colors">
+                  <Linkedin className="h-6 w-6 text-white" />
+                </span>
+                <span className="text-gray-300 group-hover:text-blue-500 transition-colors">
+                  GreedHunter
+                </span>
               </a> */}
             </div>
           </div>
+        </div>
+
+        {/* Quick Links Section */}
+        <div className="flex flex-wrap justify-center gap-6 mb-8">
+          <a href="/platform/faq" className="flex items-center gap-2 group">
+            <span className="p-2 bg-gray-800 rounded-full group-hover:bg-yellow-500 transition-colors">
+              <HelpCircle className="h-4 w-4 text-white" />
+            </span>
+            <span className="text-gray-300 group-hover:text-yellow-300 transition-colors">FAQ</span>
+          </a>
+          
+          <a href="/platform/contact us" className="flex items-center gap-2 group">
+            <span className="p-2 bg-gray-800 rounded-full group-hover:bg-blue-500 transition-colors">
+              <Phone className="h-4 w-4 text-white" />
+            </span>
+            <span className="text-gray-300 group-hover:text-blue-300 transition-colors">Contact Us</span>
+          </a>
+          
+          <a href="/platform/about us" className="flex items-center gap-2 group">
+            <span className="p-2 bg-gray-800 rounded-full group-hover:bg-purple-500 transition-colors">
+              <Users className="h-4 w-4 text-white" />
+            </span>
+            <span className="text-gray-300 group-hover:text-purple-300 transition-colors">About Us</span>
+          </a>
+          
+          <a href="/platform/privacy policy" className="flex items-center gap-2 group">
+            <span className="p-2 bg-gray-800 rounded-full group-hover:bg-green-500 transition-colors">
+              <FileText className="h-4 w-4 text-white" />
+            </span>
+            <span className="text-gray-300 group-hover:text-green-300 transition-colors">Privacy Policy</span>
+          </a>
+          
+          <a href="/platform/support us" className="flex items-center gap-2 group px-4 py-2 bg-gradient-to-r from-purple-600 to-pink-500 rounded-full hover:from-pink-500 hover:to-purple-600 transition-all">
+            <Heart className="h-4 w-4 text-white" />
+            <span className="text-white font-medium">Support Us</span>
+          </a>
         </div>
 
         {/* Divider */}
@@ -175,7 +130,7 @@ const Footer = () => {
         {/* Name & Copyright */}
         <div className="text-center space-y-4">
           <p className="text-2xl font-semibold text-yellow-300 animate-glow">
-            ༄✽ȺẞℏᎥຮꫝⅇҟ 𝒟ʊƄℯყ✽࿐
+            ༄✽GreedHunter✽࿐
           </p>
 
           <p className="text-sm text-gray-500">

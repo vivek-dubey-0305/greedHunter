@@ -318,65 +318,17 @@ const Header = () => {
 
               <div  className="border-b border-gray-800 pb-2">
 
-            <Link to="/events" onClick={() => setIsMenuOpen(false)} className="w-full flex justify-between items-center p-3 hover:bg-gray-800 rounded-lg">
-              Events
+            <Link to="/" onClick={() => setIsMenuOpen(false)} className="w-full flex justify-between items-center p-3 hover:bg-gray-800 rounded-lg">
+              Home
+            </Link>
+            <Link to="/platform/about us" onClick={() => setIsMenuOpen(false)} className="w-full flex justify-between items-center p-3 hover:bg-gray-800 rounded-lg">
+              About us
+            </Link>
+            <Link to="/platform/contact us" onClick={() => setIsMenuOpen(false)} className="w-full flex justify-between items-center p-3 hover:bg-gray-800 rounded-lg">
+              Contact Us
             </Link>
               </div>
-              {Object.keys(menuItems).map((key) => (
-                <div key={key} className="border-b border-gray-800 pb-2">
-                  <button
-                    onClick={() => toggleMobileDropdown(key)}
-                    className="w-full flex justify-between items-center p-3 hover:bg-gray-800 rounded-lg"
-                  >
-                    {menuItems[key].title}
-                  </button>
 
-                  {activeDropdown === key && (
-                    <div className="pl-4 mt-2 space-y-3 max-h-[50vh] overflow-y-auto">
-                      {menuItems[key].sections?.map((section, idx) => (
-                        <div key={idx} className="space-y-2">
-                          <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wide">
-                            {section.title}
-                          </h3>
-                          {section.items.map((item, itemIdx) => (
-                            <Link
-                              onClick={() => setIsMenuOpen(false)}
-                              key={itemIdx}
-                              to={`${key}/${item.name.toLowerCase()}`}
-                              className="block p-2 hover:bg-gray-800 rounded-lg"
-                            >
-                              <div className="flex items-center">
-                                {item.name}
-                                {item.isNew && (
-                                  <span className="ml-2 px-2 py-1 bg-blue-900 text-blue-100 rounded-full text-xs">
-                                    New
-                                  </span>
-                                )}
-                              </div>
-                              <p className="text-sm text-gray-400">
-                                {item.desc}
-                              </p>
-                            </Link>
-                          ))}
-                        </div>
-                      ))}
-
-                      {!menuItems[key].sections &&
-                        menuItems[key].items.map((item, idx) => (
-                          <Link
-                            onClick={() => setIsMenuOpen(false)}
-                            key={idx}
-                            to={`${key}/${item.name.toLowerCase()}`}
-                            className="block p-2 hover:bg-gray-800 rounded-lg"
-                          >
-                            <p className="text-gray-100">{item.name}</p>
-                            <p className="text-sm text-gray-400">{item.desc}</p>
-                          </Link>
-                        ))}
-                    </div>
-                  )}
-                </div>
-              ))}
               <div className="pt-4 space-y-2">
                 {user ? (
                   <>
