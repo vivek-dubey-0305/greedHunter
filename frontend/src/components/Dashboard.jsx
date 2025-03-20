@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { useEventContext } from "../context/EventContex";
 import { ChevronLeft, ChevronRight, Award, Calendar, HelpCircle, Settings } from "lucide-react";
+import Footer from "./Footer";
 
 const Dashboard = () => {
   const { user } = useUserContext();
@@ -134,6 +135,7 @@ const Dashboard = () => {
   };
 
   return (
+    <>
     <div className="min-h-screen flex bg-black text-white overflow-hidden">
       {/* Left Sidebar */}
       <motion.aside
@@ -166,7 +168,7 @@ const Dashboard = () => {
                 animate="open"
                 exit="closed"
                 className="text-xl font-bold text-yellow-500"
-              >
+                >
                 Dashboard
               </motion.h2>
             )}
@@ -183,10 +185,10 @@ const Dashboard = () => {
                   activeTab === tab 
                     ? "bg-gradient-to-r from-yellow-600 to-yellow-500" 
                     : "hover:bg-gray-800"
-                }`}
-                onClick={() => setActiveTab(tab)}
-                whileHover={{ scale: sidebarOpen ? 1.03 : 1 }}
-              >
+                  }`}
+                  onClick={() => setActiveTab(tab)}
+                  whileHover={{ scale: sidebarOpen ? 1.03 : 1 }}
+                  >
                 <div className="py-3 px-4 flex items-center">
                   <div className="flex-shrink-0">
                     {menuIcons[tab]}
@@ -194,12 +196,12 @@ const Dashboard = () => {
                   <AnimatePresence>
                     {sidebarOpen && (
                       <motion.span
-                        variants={menuItemVariants}
-                        initial="closed"
-                        animate="open"
+                      variants={menuItemVariants}
+                      initial="closed"
+                      animate="open"
                         exit="closed"
                         className="ml-3 font-medium"
-                      >
+                        >
                         {tab}
                       </motion.span>
                     )}
@@ -216,16 +218,16 @@ const Dashboard = () => {
             className="w-full py-3 px-4 bg-gradient-to-r from-red-700 to-red-600 hover:from-red-800 hover:to-red-700 text-white font-bold rounded-lg flex items-center justify-center transition-all duration-300"
             onClick={() => navigate(`/user/${user._id}/settings`)}
             whileHover={{ scale: 1.03 }}
-          >
+            >
             <Settings size={20} />
             <AnimatePresence>
               {sidebarOpen && (
                 <motion.span
-                  variants={menuItemVariants}
-                  initial="closed"
-                  animate="open"
-                  exit="closed"
-                  className="ml-2"
+                variants={menuItemVariants}
+                initial="closed"
+                animate="open"
+                exit="closed"
+                className="ml-2"
                 >
                   Account & Settings
                 </motion.span>
@@ -248,15 +250,15 @@ const Dashboard = () => {
               <div className="flex space-x-2 p-1 bg-gray-900 rounded-lg">
                 {["Enrolled", "Upcoming", "Active"].map((tab) => (
                   <motion.button
-                    key={tab}
-                    className={`py-2 px-4 font-medium rounded-md transition-all duration-300 ${
-                      activeSubTab === tab 
-                        ? "bg-purple-600 text-white" 
-                        : "text-gray-400 hover:text-white"
-                    }`}
-                    onClick={() => setActiveSubTab(tab)}
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
+                  key={tab}
+                  className={`py-2 px-4 font-medium rounded-md transition-all duration-300 ${
+                    activeSubTab === tab 
+                    ? "bg-purple-600 text-white" 
+                    : "text-gray-400 hover:text-white"
+                  }`}
+                  onClick={() => setActiveSubTab(tab)}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
                   >
                     {tab}
                   </motion.button>
@@ -269,7 +271,7 @@ const Dashboard = () => {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 className="text-center py-20"
-              >
+                >
                 <div className="text-yellow-500 mb-3">
                   <Calendar size={48} className="mx-auto" />
                 </div>
@@ -280,17 +282,17 @@ const Dashboard = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {scheduledEvents[activeSubTab]?.map((event, index) => (
                   <motion.div
-                    key={event._id || index}
-                    custom={index}
-                    initial="hidden"
-                    animate="visible"
-                    whileHover="hover"
-                    variants={cardVariants}
-                    className="bg-gray-900 rounded-xl overflow-hidden border-l-4 border-purple-600 shadow-lg"
-                    onClick={() =>
-                      activeSubTab === "Enrolled"
+                  key={event._id || index}
+                  custom={index}
+                  initial="hidden"
+                  animate="visible"
+                  whileHover="hover"
+                  variants={cardVariants}
+                  className="bg-gray-900 rounded-xl overflow-hidden border-l-4 border-purple-600 shadow-lg"
+                  onClick={() =>
+                    activeSubTab === "Enrolled"
                         ? navigate(
-                            `/greed-of-event/${event.category}/${event.subcategory}/${event.categoryId}`
+                          `/greed-of-event/${event.category}/${event.subcategory}/${event.categoryId}`
                           )
                         : navigate(
                             `/event/${event.category}/${event.subcategory}/${event._id}`
@@ -343,11 +345,11 @@ const Dashboard = () => {
                             {/* {event.isPlayed && (
                               <div className={`flex items-center ${event.won ? "text-green-400" : "text-red-400"}`}>
                                 <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
                                 </svg>
                                 <span>{event.won ? "Won" : "Lost"}</span>
-                              </div>
-                            )} */}
+                                </div>
+                                )} */}
                           </>
                         ) : (
                           <>
@@ -392,10 +394,10 @@ const Dashboard = () => {
         {/* BADGES SECTION */}
         {activeTab === "Badges" && (
           <motion.div 
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            className="flex flex-col items-center justify-center h-full pt-20"
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="flex flex-col items-center justify-center h-full pt-20"
           >
             <Award size={80} className="text-yellow-500 mb-6" />
             <h2 className="text-2xl font-bold text-gray-300">Badges Coming Soon</h2>
@@ -408,10 +410,10 @@ const Dashboard = () => {
         {/* SUPPORT SECTION */}
         {activeTab === "Support" && (
           <motion.div 
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            className="flex flex-col items-center justify-center h-full pt-20"
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="flex flex-col items-center justify-center h-full pt-20"
           >
             <HelpCircle size={80} className="text-yellow-500 mb-6" />
             <h2 className="text-2xl font-bold text-gray-300">Support Center</h2>
@@ -422,13 +424,15 @@ const Dashboard = () => {
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               className="mt-6 bg-purple-600 hover:bg-purple-700 text-white py-2 px-6 rounded-lg font-medium"
-            >
+              >
               Contact Support
             </motion.button>
           </motion.div>
         )}
       </main>
     </div>
+      <Footer />
+        </>
   );
 };
 

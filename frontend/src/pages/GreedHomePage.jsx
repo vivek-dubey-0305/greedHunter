@@ -357,84 +357,103 @@ const HeroSection = () => {
 
       {/* Testimonials Section */}
       <section className="relative z-10 py-20 px-6 bg-gradient-to-b from-transparent to-black/60">
-  <motion.div
-    initial={{ opacity: 0 }}
-    whileInView={{ opacity: 1 }}
-    transition={{ duration: 0.6 }}
-    viewport={{ once: true }}
-    className="max-w-7xl mx-auto"
-  >
-    <h2 className="text-4xl font-bold text-center mb-2">
-      <span className="bg-clip-text text-transparent bg-gradient-to-r from-yellow-400 to-purple-400">Testimonials</span>
-    </h2>
-    <p className="text-gray-400 text-center max-w-2xl mx-auto mb-12">
-      See what our community has to say about their GreedHunter experience.
-    </p>
-    
-    <div className="testimonial-wrapper overflow-hidden relative pb-6">
-      <div className="testimonial-container flex" style={{ animation: 'scroll 20s linear infinite' }}>
-        {[...testimonials, ...testimonials].map((t, index) => (
-          <motion.div
-            key={`${t.id}-${index}`} // Ensure unique keys by combining id and index
-            className="m-2 flex-shrink-0 w-[330px] bg-gradient-to-br from-gray-800/80 to-gray-900/80 backdrop-blur-sm p-6 rounded-xl shadow-lg border border-purple-500/20 flex flex-col"
-            whileHover={{ 
-              y: -10,
-              boxShadow: "0 20px 25px -5px rgba(168, 85, 247, 0.2), 0 10px 10px -5px rgba(168, 85, 247, 0.1)"
-            }}
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ delay: index * 0.1, duration: 0.5 }}
-            viewport={{ once: true }}
+      <motion.div
+        initial={{ opacity: 0 }}
+        whileInView={{ opacity: 1 }}
+        transition={{ duration: 0.6 }}
+        viewport={{ once: true }}
+        className="max-w-7xl mx-auto"
+      >
+        {/* Heading */}
+        <h2 className="text-4xl font-bold text-center mb-2">
+          <span className="bg-clip-text text-transparent bg-gradient-to-r from-yellow-400 to-purple-400">
+            Testimonials
+          </span>
+        </h2>
+        <p className="text-gray-400 text-center max-w-2xl mx-auto mb-12">
+          See what our community has to say about their GreedHunter experience.
+        </p>
+
+        {/* Testimonial Slider */}
+        <div className="testimonial-wrapper overflow-hidden relative pb-6">
+          <div
+            className="testimonial-container flex"
+            style={{ animation: "scroll 20s linear infinite" }}
           >
-            <div className="flex items-center ">
-              <div className="w-12 h-12 rounded-full bg-purple-500/20 overflow-hidden border-2 border-yellow-400 flex items-center justify-center">
-                <span className="text-yellow-400 font-bold text-lg">{t.name[0]}</span>
-              </div>
-              <div className="ml-4">
-                <h3 className="text-lg font-semibold">{t.name}</h3>
-                <p className="text-gray-400 text-sm">{t.profession}</p>
-              </div>
-            </div>
-            <p className="mt-4 text-gray-300">{t.content}</p>
-            <div className="mt-4 text-yellow-400 flex">
-              {[...Array(t.stars)].map((_, i) => (
-                <Star key={i} className="w-5 h-5 fill-yellow-400" />
-              ))}
-            </div>
-          </motion.div>
-        ))}
-      </div>
-    </div>
-          </motion.div>
-          
-          <style jsx>
-            {`
-.testimonial-wrapper {
-  position: relative;
-  overflow: hidden;
-}
+            {[...testimonials, ...testimonials].map((t, index) => (
+              <motion.div
+                key={`${t.id}-${index}`}
+                className="m-2 flex-shrink-0 w-[330px] bg-gradient-to-br from-gray-800/80 to-gray-900/80 backdrop-blur-sm p-6 rounded-xl shadow-lg border border-purple-500/20 flex flex-col"
+                whileHover={{
+                  y: -10,
+                  boxShadow:
+                    "0 20px 25px -5px rgba(168, 85, 247, 0.2), 0 10px 10px -5px rgba(168, 85, 247, 0.1)",
+                }}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * 0.1, duration: 0.5 }}
+                viewport={{ once: true }}
+              >
+                {/* Profile Image & Name */}
+                <div className="flex items-center">
+                  <div className="w-12 h-12 rounded-full bg-purple-500/20 overflow-hidden border-2 border-yellow-400">
+                    <img
+                      src={t.image}
+                      alt={t.name}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                  <div className="ml-4">
+                    <h3 className="text-lg font-semibold">{t.name}</h3>
+                    <p className="text-gray-400 text-sm">{t.profession}</p>
+                  </div>
+                </div>
 
-.testimonial-container {
-  display: flex;
-  animation: scroll 20s linear infinite;
-}
+                {/* Testimonial Content */}
+                <p className="mt-4 text-gray-300">{t.content}</p>
 
-@keyframes scroll {
-  0% {
-    transform: translateX(0);
-  }
-  100% {
-    transform: translateX(-50%);
-  }
-}
+                {/* Star Ratings */}
+                <div className="mt-4 text-yellow-400 flex">
+                  {[...Array(t.stars)].map((_, i) => (
+                    <Star key={i} className="w-5 h-5 fill-yellow-400" />
+                  ))}
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </motion.div>
 
-.testimonial-wrapper:hover .testimonial-container {
-  animation-play-state: paused;
-}`}
-          </style>
-      <Footer />
-</section>
+      {/* Auto-Scroll Animation */}
+      <style jsx>
+        {`
+          .testimonial-wrapper {
+            position: relative;
+            overflow: hidden;
+          }
 
+          .testimonial-container {
+            display: flex;
+            animation: scroll 20s linear infinite;
+          }
+
+          @keyframes scroll {
+            0% {
+              transform: translateX(0);
+            }
+            100% {
+              transform: translateX(-50%);
+            }
+          }
+
+          .testimonial-wrapper:hover .testimonial-container {
+            animation-play-state: paused;
+          }
+        `}
+              </style>
+              
+              <Footer />
+    </section>
       {/* Custom Cursor */}
       {cursorHover && (
         <motion.div

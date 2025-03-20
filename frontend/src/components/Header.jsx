@@ -106,6 +106,7 @@ const Header = () => {
 
     setIsMenuOpen(false);
     navigate("/");
+    window.location.reload();
     // setUser((prevUser) => ({
     //   ...prevUser,
     //   ...res.user
