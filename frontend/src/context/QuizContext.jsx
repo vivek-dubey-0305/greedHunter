@@ -6,9 +6,10 @@ const QuizContext = createContext();
 export const useQuizContext = () => useContext(QuizContext);
 
 export const QuizProvider = ({ children }) => {
-  const getquizQuestions = async () => {
+  const getquizQuestions = async (category,subcategory) => {
     try {
-      const response = await apiUser.get("/getquizQuestions");
+      console.log("QuizCategory", category,subcategory)
+      const response = await apiUser.get(`/getquizQuestions/${category}/${subcategory}`);
       // console.log("GetquizQuestionReponse", response);
       return response;
     } catch (error) {

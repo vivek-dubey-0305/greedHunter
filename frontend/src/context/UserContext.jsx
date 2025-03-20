@@ -9,6 +9,10 @@ export const useUserContext = () => useContext(UserContext);
 export const UserProvider = ({ children }) => {
   const [isRegistered, setIsRegistered] = useState(false);
   const [user, setUser] = useState(null);
+  //   const [user, setUser] = useState({
+  //     // Add initial empty Map structure
+  //     enrolledEvents: new Map()
+  // });
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [loading, setLoading] = useState(true);
 
@@ -51,7 +55,6 @@ export const UserProvider = ({ children }) => {
     fetchUser();
   }, []);
 
-
   const registerUser = async ({
     username,
     fullName,
@@ -85,7 +88,7 @@ export const UserProvider = ({ children }) => {
   const loginUser = async ({ usernameORemail, password }) => {
     try {
       const fields = { usernameORemail, password };
-      // console.log("fields userContext:\n", fields);
+      console.log("fields userContext:\n", fields);
       const loginResponse = await apiUser.post("/login", {
         usernameORemail,
         password,
@@ -116,6 +119,33 @@ export const UserProvider = ({ children }) => {
       console.error("Uc-OtE:\n", error);
       throw error.response?.data || { message: "Failed to register user" };
       // return error.response.data.message;
+    }
+  };
+
+  // !RESET PASSWORD
+  const sendLink = async ({ email }) => {
+    try {
+      // console.log("fields userContext:\n", email);
+      const linkResponse = await apiUser.post("/reset-password-link", {
+        email,
+      });
+
+      console.log("linkResponse userContext:\n", linkResponse.data);
+      return linkResponse.data;
+    } catch (error) {
+      console.error("Uc-LME:\n", error);
+      throw error.response?.data || { message: "Failed to register user" };
+    }
+  };
+
+  const resetPassword = async () => {
+    try {
+      const response = await apiUser.post("/reset-password");
+      // console.log("GetUSersResponse..\n", response);
+      return response;
+    } catch (error) {
+      console.error("Error gtU..\n", error);
+      return error.response.data.message;
     }
   };
 
@@ -216,19 +246,115 @@ export const UserProvider = ({ children }) => {
     }
   };
 
-  const updateMarks = async ({ marks, phone }) => {
+  const updateProfile = async ({
+    username,
+    fullName,
+    email,
+    phone,
+    gender,
+    social_links = {},
+  }) => {
+    console.log(
+      "contextU body",
+      username,
+      fullName,
+      email,
+      phone,
+      gender,
+      social_links
+    );
+    try {
+      const updateUserResponse = await apiUser.post("/updateProfile", {
+        username,
+        fullName,
+        email,
+        phone,
+        gender,
+        social_links,
+      });
+
+      console.log("UPDATERES", updateUserResponse);
+      console.log("UPDATERES", updateUserResponse.data);
+      setUser((prevUser) => ({
+        ...prevUser,
+        ...updateUserResponse.data.user,
+      }));
+      return updateUserResponse.data;
+    } catch (error) {
+      console.error("Uc-upU-E:\n", error);
+      throw error.response?.data || { message: "Failed to register user" };
+    }
+  };
+
+  const changePassword = async ({
+    currentPassword,
+    newPassword,
+    confirmPassword,
+  }) => {
+    console.log(
+      "currentPassword,newPassword,confirmPassword",
+      currentPassword,
+      newPassword,
+      confirmPassword
+    );
+
+    try {
+      const changePasswordRes = await apiUser.post("/change-password", {
+        currentPassword,
+        newPassword,
+        confirmPassword,
+      });
+
+      console.log("Reponse change password", changePasswordRes);
+      return changePasswordRes.data.message;
+    } catch (error) {
+      console.error("Error CPwE", error);
+      throw error.response || "Something Went Wrong!!";
+    }
+  };
+
+  const deleteAccount = async () => {
+    try {
+      const deleteUserRes = await apiUser.get("/delete-account");
+      console.log("DElETEUSer", deleteUserRes);
+      setUser(null);
+      return deleteUserRes.data;
+    } catch (error) {
+      console.error("ErrorDELETEINGUSER", error);
+      throw error.response;
+    }
+  };
+
+  const updateMarks = async ({
+    marks,
+    category,
+    subcategory,
+    eventId,
+    isPlayed,
+  }) => {
     try {
       // console.log("MARKS AND PGONE NUMBER..\n", marks, phone);
       // console.log("MARKS AND PGONE NUMBER..\n", { marks, phone });
-      const response = await apiUser.post("/updateUserMarks", { marks, phone });
-      // console.log("REsponse update marks..\n", response);
+      const response = await apiUser.post("/updateUserMarks", {
+        marks,
+        category,
+        subcategory,
+        eventId,
+        isPlayed,
+      });
+      console.log("REsponse update marks..\n", response);
       return response;
     } catch (error) {
       console.error("Error upM..\n", error);
 
-      return error;
+      throw error || "Unablw to update amrks";
     }
   };
+
+  //   const enrollUser = async (category, subcategory, eventId) => {
+  //     const response = await apiUser.post("/enrollUser", { category, subcategory, eventId });
+  //     return response.data;
+  //   };
 
   const getUsers = async () => {
     try {
@@ -238,7 +364,6 @@ export const UserProvider = ({ children }) => {
     } catch (error) {
       console.error("Error gtU..\n", error);
       return error.response.data.message;
-   
     }
   };
 
@@ -248,10 +373,21 @@ export const UserProvider = ({ children }) => {
         registerUser,
         loginUser,
         sendOtp,
+
+        sendLink,
+        resetPassword,
+
         verifyOtp,
         logoutUser,
         completeUserProfile,
         getUsers,
+
+        updateProfile,
+
+        changePassword,
+
+        deleteAccount,
+
         updateMarks,
         isRegistered,
         user,
@@ -260,6 +396,7 @@ export const UserProvider = ({ children }) => {
         loading,
 
         setIsRegistered,
+
         // user,
       }}
     >

@@ -6,6 +6,12 @@ export const apiUser = axios.create({
     withCredentials: true, // ✅ Ensures cookies are sent and received
 });
 
+export const apiLeaderboard = axios.create({
+    // baseURL: "http://localhost:8000/api/v1/users", // Change this to your actual backend URL
+    baseURL: import.meta.env.VITE_LEADERBOARD_API_URL,
+    withCredentials: true, // ✅ Ensures cookies are sent and received
+});
+
 
 apiUser.interceptors.response.use(
     response => response,  // ✅ If response is OK, return it as is.

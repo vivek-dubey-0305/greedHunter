@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 // import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useQuizContext } from "../context/QuizContext";
 import { useUserContext } from "../context/UserContext";
 import {
@@ -33,6 +33,8 @@ const QuizPage = () => {
 
   const navigate = useNavigate();
 
+  const {category,subcategory, eventId} = useParams()
+
   // const { user, isRegistered, setIsRegistered } = useUserContext();
 
   const { user, updateMarks, isAuthenticated, setIsRegistered } =
@@ -41,11 +43,13 @@ const QuizPage = () => {
   useEffect(() => {
     const fetchQuestions = async () => {
       try {
-        const response = await getquizQuestions();
+        const response = await getquizQuestions(category,subcategory);
         // const response = await axios.get("/getquizQuestions");
-        // console.log("response..\n-----------\n", response.data.questions);
-        setQuestions(response.data.quizData);
+        console.log("response..\n-----------\n", response.data);
+        // console.log("response..\n-----------\n", response);
+        setQuestions(response.data);
         // console.log("USER...\n-----\n", user);
+        console.log(category, subcategory)
       } catch (error) {
         console.error("E-FQQ-49", error);
       }
@@ -118,6 +122,7 @@ const QuizPage = () => {
   // Submit quiz & calculate score
   const handleSubmitQuiz = async () => {
     setQuizCompleted(true);
+    let isPlayed = true
     let calculatedScore = 0;
 
     questions.forEach((q, index) => {
@@ -129,9 +134,13 @@ const QuizPage = () => {
     setScore(calculatedScore);
     const responseResult = await updateMarks({
       marks: calculatedScore,
-      phone: user.phone,
+      // phone: user.phone,
+      category,
+      subcategory,
+      eventId,
+      isPlayed
     });
-    // console.log("RepsonseREsultMarks..\n", responseResult);
+    console.log("RepsonseREsultMarks..\n", responseResult);
   };
 
   const handleNavigate = () => {

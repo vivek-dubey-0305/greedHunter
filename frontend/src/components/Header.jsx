@@ -20,7 +20,7 @@ const Header = () => {
 
   const navigate = useNavigate();
 
-  const { user, isAuthenticated, logoutUser } = useUserContext();
+  const { user, setUser, isAuthenticated, logoutUser } = useUserContext();
 
   // Handle click outside for mobile menu and user dropdown
   useClickAway(navRef, () => {
@@ -88,8 +88,29 @@ const Header = () => {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
+  useEffect(() => {
+    if (isMenuOpen) {
+      document.body.style.overflow = "hidden"; // Prevent page scrolling
+    } else {
+      document.body.style.overflow = "auto"; // Restore page scrolling
+    }
+    return () => {
+      document.body.style.overflow = "auto"; // Cleanup when component unmounts
+    };
+  }, [isMenuOpen]);
+
   const handleLogOut = async () => {
     const res = await logoutUser();
+    // console.log("Logout Response", res);
+    // console.log("Logout Response", res.user);
+
+    setIsMenuOpen(false);
+    navigate("/");
+    // setUser((prevUser) => ({
+    //   ...prevUser,
+    //   ...res.user
+    // }));
+
     // console.log("REs", res);
   };
 
@@ -102,16 +123,20 @@ const Header = () => {
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <Link to="/" className="text-xl font-bold">
-            <span className="text-purple-700">greed</span>Hunter
+            <span className="text-purple-500">greed</span><span className="text-yellow-500">Hunter</span>
           </Link>
 
           {/* Desktop Menu */}
           <div className="hidden lg:flex items-center space-x-4">
-            <Link to="/events" className="hover:text-gray-300 mr-7">
-              Events
+            <Link to="/" className="hover:text-gray-300 mr-7">
+              Home
+            </Link>
+            <Link to="/platform/about us" className="hover:text-gray-300 mr-7">
+              About Us
             </Link>
 
-            {Object.keys(menuItems).map((key) => (
+            {/* {
+              Object.keys(menuItems).map((key) => (
               <div
                 key={key}
                 className="relative"
@@ -126,7 +151,7 @@ const Header = () => {
                   {menuItems[key].title}
                 </button>
 
-                {/* Dropdown Content */}
+                // Dropdown Content 
                 {activeDropdown === key && (
                   <div
                     ref={dropdownRef}
@@ -194,10 +219,10 @@ const Header = () => {
                   </div>
                 )}
               </div>
-            ))}
+            ))} */}
 
-            <Link to="/pricing" className="hover:text-gray-300">
-              Pricing
+            <Link to="/platform/contact us" className="hover:text-gray-300">
+              Contac Us
             </Link>
           </div>
 
@@ -229,18 +254,16 @@ const Header = () => {
 
                 {isUserDropdownOpen && (
                   <div className="absolute right-0 top-full mt-2 w-48 bg-white text-black rounded-lg shadow-xl overflow-hidden z-50">
-                  
-                      {!isAuthenticated ? (
-                        <Link
-                          to={`/sotp`}
-                          className="block px-4 py-3 hover:bg-gray-100 transition-colors"
-                        >
-                          Verify
-                        </Link>
-                      ) : (
-                        ""
-                      )}
-                
+                    {!isAuthenticated ? (
+                      <Link
+                        to={`/sotp`}
+                        className="block px-4 py-3 hover:bg-gray-100 transition-colors"
+                      >
+                        Verify
+                      </Link>
+                    ) : (
+                      ""
+                    )}
 
                     <Link
                       to={`/user/${user._id}/settings`}
@@ -249,12 +272,12 @@ const Header = () => {
                       Settings
                     </Link>
 
-                    <Link
+                    {/* <Link
                       to={`/leaderboard`}
                       className="block px-4 py-3 hover:bg-gray-100 transition-colors"
                     >
                       LeaderBoard
-                    </Link>
+                    </Link> */}
                     <button
                       onClick={handleLogOut}
                       className="block px-4 py-3 hover:bg-gray-100 transition-colors text-red-600"
@@ -286,9 +309,19 @@ const Header = () => {
 
       {/* Mobile Menu */}
       {isMenuOpen && (
-        <div className="lg:hidden absolute w-full bg-black border-t border-gray-800">
+        <div
+          className="lg:hidden absolute w-full bg-black border-t border-gray-800 
+               max-h-[80vh] overflow-y-auto"
+        >
           <div className="container mx-auto px-4 py-4">
             <div className="space-y-2">
+
+              <div  className="border-b border-gray-800 pb-2">
+
+            <Link to="/events" onClick={() => setIsMenuOpen(false)} className="w-full flex justify-between items-center p-3 hover:bg-gray-800 rounded-lg">
+              Events
+            </Link>
+              </div>
               {Object.keys(menuItems).map((key) => (
                 <div key={key} className="border-b border-gray-800 pb-2">
                   <button
@@ -299,7 +332,7 @@ const Header = () => {
                   </button>
 
                   {activeDropdown === key && (
-                    <div className="pl-4 mt-2 space-y-3">
+                    <div className="pl-4 mt-2 space-y-3 max-h-[50vh] overflow-y-auto">
                       {menuItems[key].sections?.map((section, idx) => (
                         <div key={idx} className="space-y-2">
                           <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wide">
@@ -307,6 +340,7 @@ const Header = () => {
                           </h3>
                           {section.items.map((item, itemIdx) => (
                             <Link
+                              onClick={() => setIsMenuOpen(false)}
                               key={itemIdx}
                               to={`${key}/${item.name.toLowerCase()}`}
                               className="block p-2 hover:bg-gray-800 rounded-lg"
@@ -330,6 +364,7 @@ const Header = () => {
                       {!menuItems[key].sections &&
                         menuItems[key].items.map((item, idx) => (
                           <Link
+                            onClick={() => setIsMenuOpen(false)}
                             key={idx}
                             to={`${key}/${item.name.toLowerCase()}`}
                             className="block p-2 hover:bg-gray-800 rounded-lg"
@@ -342,19 +377,31 @@ const Header = () => {
                   )}
                 </div>
               ))}
-
               <div className="pt-4 space-y-2">
-                {isAuthenticated && user ? (
+                {user ? (
                   <>
+                    {!isAuthenticated ? (
+                      <Link
+                        onClick={() => setIsMenuOpen(false)}
+                        to={`/sotp`}
+                        className="block p-3 text-center hover:bg-gray-800 rounded-lg"
+                      >
+                        Verify
+                      </Link>
+                    ) : (
+                      ""
+                    )}
+
                     <Link
+                      onClick={() => setIsMenuOpen(false)}
                       to={`/user/${user._id}/settings`}
                       className="block p-3 text-center hover:bg-gray-800 rounded-lg"
                     >
                       Settings
                     </Link>
                     <Link
-                      to="/logout"
                       className="block p-3 text-center hover:bg-gray-800 rounded-lg text-red-500"
+                      onClick={handleLogOut}
                     >
                       Logout
                     </Link>
@@ -362,12 +409,7 @@ const Header = () => {
                 ) : (
                   <>
                     <Link
-                      to="/get-in"
-                      className="block w-full p-3 text-center hover:bg-gray-800 rounded-lg"
-                    >
-                      Login
-                    </Link>
-                    <Link
+                      onClick={() => setIsMenuOpen(false)}
                       to="/get-in"
                       className="block w-full p-3 bg-blue-600 hover:bg-blue-700 text-center rounded-lg transition-colors"
                     >
@@ -376,6 +418,8 @@ const Header = () => {
                   </>
                 )}
               </div>
+
+              {/*  */}
             </div>
           </div>
         </div>

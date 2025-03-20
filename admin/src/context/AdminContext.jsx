@@ -29,68 +29,121 @@ export const AdminProvider = ({ children }) => {
     }
   };
 
+  // const createEvent = async ({
+  //   title,
+  //   description,
+  //   eventType,
+  //   category,
+  //   startTime,
+  //   endTime,
+  //   location,
+  //   rules,
+  //   rewardDetails,
+  //   socialLinks,
+  // }) => {
+  //   const fields = {
+  //     title,
+  //     description,
+  //     eventType,
+  //     category,
+  //     startTime,
+  //     endTime,
+  //     location,
+  //     rules,
+  //     rewardDetails,
+  //     socialLinks,
+  //   };
+  //   // console.log("FIELDS EVENTs", fields);
+
+  //   try {
+  //     const createEventResponse = await apiAdmin.post("/createEvent", {
+  //       title,
+  //       description,
+  //       eventType,
+  //       category,
+  //       startTime,
+  //       endTime,
+  //       location,
+  //       rules,
+  //       rewardDetails,
+  //       socialLinks,
+  //     });
+
+  //     // console.log("createEventResponse", createEventResponse);
+  //     // console.log("createEventResponse", createEventResponse.data);
+  //     return createEventResponse.data;
+  //   } catch (error) {
+  //     // console.log("ERROR", error);
+  //     // console.log("ERROR", error.message);
+  //     throw error.response.data.message || "Something went wrong";
+  //   }
+  // };
+
+
+
+
+
+  // *
+  
   const createEvent = async ({
     title,
     description,
     eventType,
     category,
+    subcategory,
     startTime,
     endTime,
     location,
+    price,
+    isFree,
     rules,
     rewardDetails,
     socialLinks,
   }) => {
-    const fields = {
-      title,
-      description,
-      eventType,
-      category,
-      startTime,
-      endTime,
-      location,
-      rules,
-      rewardDetails,
-      socialLinks,
-    };
-    // console.log("FIELDS EVENTs", fields);
-
     try {
+      // ✅ Convert rules & socialLinks to arrays if not already
+      const formattedRules = Array.isArray(rules) ? rules : rules.split(",");
+      const formattedSocialLinks = Array.isArray(socialLinks)
+        ? socialLinks
+        : socialLinks.split(",");
+  
       const createEventResponse = await apiAdmin.post("/createEvent", {
         title,
         description,
         eventType,
         category,
+        subcategory,
         startTime,
         endTime,
-        location,
-        rules,
+        location: eventType === "physical" ? location : "",
+        price,
+        isFree,
+        rules: formattedRules,
         rewardDetails,
-        socialLinks,
+        socialLinks: formattedSocialLinks,
       });
-
-      // console.log("createEventResponse", createEventResponse);
-      // console.log("createEventResponse", createEventResponse.data);
+  
       return createEventResponse.data;
     } catch (error) {
-      // console.log("ERROR", error);
-      // console.log("ERROR", error.message);
-      throw error.response.data.message || "Something went wrong";
+      throw error.response?.data?.message || "Something went wrong";
     }
   };
+  
 
-  const createQuiz = async (question, options, correctOption) => {
+  
+
+  const createQuiz = async (subCategory, questions) => {
     try {
       const response = await apiAdmin.post("/createQuizQuestions", {
-        question,
-        options,
-        correctOption,
+        subCategory,
+        questions,
       });
       //   console.log("QuizResponse..\n------------------\n", response);
       return response;
     } catch (error) {
-      // console.error("error gtQ", error);
-      return error;
+      console.error("error gtQ", error);
+      throw error.response || "Something Went wrong!!";
+      // return error;
     }
   };
   return (

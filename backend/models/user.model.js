@@ -1,262 +1,140 @@
-// import mongoose, { Schema } from "mongoose";
-
-
-// const userSchema = new Schema(
-//     {
-//         username: {
-//             type: String,
-//             required: true,
-//             lowercase: true,
-//             trim: true,
-//             unique: true
-//         },
-//         name: {
-//             type: String,
-//             required: true,
-//             lowercase: true,
-//             trim: true,
-//         },
-//         gender: {
-//             type: String,
-//             required: true,
-//             trim: true,
-//         },
-
-//         phone: {
-//             type: Number,
-//             unique: true,
-//             required: true,
-//         },
-
-//         email: {
-//             type: String,
-//             unique: true,
-//             required: true
-//         },
-
-//         studyLevel: {
-//             type: String,
-//             required: true,
-//             trim: true,
-//         },
-
-//         schoolName: {
-//             type: String,
-//             required: true,
-//             trim: true,
-//             default:null
-//         },
-
-//         standard: {
-//             type: String,
-//             required: true,
-//             trim: true,
-//             default:null
-//         },
-
-//         rollNumber: {
-//             type: String,
-//             required: true,
-//             lowercase: true,
-//             trim: true,
-//             default:null
-//         },
-
-
-//         collegeName: {
-//             type: String,
-//             required: true,
-//             trim: true,
-//             default:null
-//         },
-
-//         course: {
-//             type: String,
-//             required: true,
-//             trim: true,
-//             default:null
-//         },
-
-//         semester: {
-//             type: String,
-//             required: true,
-//             trim: true,
-//             default:null
-//         },
-
-//         enrollmentNumber: {
-//             type: String,
-//             required: true,
-//             trim: true,
-//             unique: true,
-//             default:null
-//         },
-
-//         section: {
-//             type: String,
-//             required: true,
-//         },
-
-//         marks: {
-//             type: Number,
-//         },
-
-//         isRegisteredUSer: {
-//             type: Boolean,
-//             default: false,
-//         },
-
-//         deviceId: {
-//             type: String,
-//             default: null
-//         }
-//     },
-//     {
-//         timestamps: true
-//     }
-// )
-
-
-// export const User = mongoose.model("User", userSchema);
-
 import mongoose, { Schema } from "mongoose";
-
 import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs"
+import randomstring from "randomstring"
 
 const userSchema = new Schema(
     {
         username: {
-            type: String,
-            required: true,
-            lowercase: true,
-            trim: true,
-            unique: true,
+            type: String, required: true, lowercase: true, trim: true, unique: true,
         },
         fullName: {
-            type: String,
-            required: true,
-            trim: true,
+            type: String, required: true, trim: true,
         },
         phone: {
-            type: Number,
-            unique: true,
-            required: true,
-            trim: true,
+            type: Number, unique: true, required: true, trim: true,
         },
         email: {
-            type: String,
-            unique: true,
-            required: true,
-            lowercase: true,
-            trim: true,
+            type: String, unique: true, required: true, lowercase: true, trim: true,
         },
         password: {
-            type: String,
-            required: [true, "PASSWORD IS REQUIRED!"]
+            type: String, required: [true, "PASSWORD IS REQUIRED!"]
         },
         refreshToken: {
             type: String
         },
         gender: {
-            type: String,
-            required: true,
-            lowecarse: true,
-            trim: true,
-            default: "not specified"
+            type: String, required: true, lowecarse: true, trim: true, default: "not specified"
         },
-
         // -------------------
         studyLevel: {
-            type: String,
-            required: true,
-            trim: true,
-            default: "not specified"
+            type: String, required: true, trim: true, default: "not specified"
         },
 
+        // enrolledEvents: { type: Object, }, // ✅ Plain Object Instead of Map default: {}
 
-        // ✅ Enrollment Fields
-        // enrolled: { type: Boolean, default: false },  // If user is enrolled
-        // category: { type: String, trim: true },  // Category of enrollment
         enrolledEvents: [
             {
-                eventId: { type: Schema.Types.ObjectId, ref: "Event" },
-                enrolled: { type: Boolean, default: false },
-                title: { type: String, required: true },
-                category: { type: String, required: true },
+                eventCategory: { type: Schema.Types.ObjectId, ref: "EventCategory" },  // ✅ References EventCategory
+                category: { type: String, required: true },  // ✅ Stores subcategory name
+                subcategory: { type: String, required: true },  // ✅ Stores subcategory name
                 startTime: { type: Date, required: true },
-                endTime: { type: Date, required: true },
-            },
+                Location:{type:String},
+                eventId: { type: Schema.Types.ObjectId, required: true, },  // ✅ Stores event reference
+                isPlayed: { type: Boolean, default: false },  // ✅ User-specific data
+                marks: { type: Number, default: 0 },  // ✅ User-specific data
+                rank: { type: Number, default: 0 },  // ✅ User-specific data
+                won: { type: Boolean, default: false }  // ✅ User-specific data
+            }
         ],
+
 
         // School-related fields
         schoolName: {
-            type: String,
+            type: String, trim: true,
             required: function () {
                 return this.studyLevel === "School";
             },
-            trim: true,
         },
+
         standard: {
-            type: String,
+            type: String, trim: true,
             required: function () {
                 return this.studyLevel === "School";
             },
-            trim: true,
         },
+
         rollNumber: {
-            type: String,
+            type: String, lowercase: true, trim: true,
             required: function () {
                 return this.studyLevel === "School";
             },
-            lowercase: true,
-            trim: true,
         },
         // College-related fields
         collegeName: {
-            type: String,
+            type: String, trim: true,
             required: function () {
                 return this.studyLevel === "College";
             },
-            trim: true,
         },
         course: {
-            type: String,
+            type: String, trim: true,
             required: function () {
                 return this.studyLevel === "College";
             },
-            trim: true,
         },
         semester: {
-            type: String,
+            type: String, trim: true,
             required: function () {
                 return this.studyLevel === "College";
             },
-            trim: true,
         },
+
         enrollmentNumber: {
-            type: String,
+            type: String, trim: true, unique: true, sparse: true, //✅ Allows multiple `null` values
             required: function () {
                 return this.studyLevel === "College";
             },
-            trim: true,
-            unique: true,
-            sparse: true, //✅ Allows multiple `null` values
         },
-        marks: {
-            type: Number,
-        },
+
         isVerified: {
-            type: Boolean,
-            default: false,
+            type: Boolean, default: false,
         },
         isProfileCompleted: {
-            type: Boolean,
-            default: false,
+            type: Boolean, default: false,
+        },
+
+        social_links: {
+            youtube: {
+                type: String,
+                default: "",
+            },
+            instagram: {
+                type: String,
+                default: "",
+            },
+            facebook: {
+                type: String,
+                default: "",
+            },
+            twitter: {
+                type: String,
+                default: "",
+            },
+            github: {
+                type: String,
+                default: "",
+            },
+            website: {
+                type: String,
+                default: "",
+            }
         },
 
         verificationCode: Number,
         verificationCodeExpire: Date,
+        token: String,
+        tokenExpire: Date,
     },
     {
         timestamps: true,
@@ -302,7 +180,7 @@ userSchema.methods.generateRefreshToken = function () {
 userSchema.methods.generateVerificationCode = function () {
     function generateCodeNumber() {
         const firstDigit = Math.floor(Math.random() * 9) + 1
-        const remainingDigits = Math.floor(Math.random() * 10000).toString().padStart(4, 0)
+        const remainingDigits = Math.floor(Math.random() * 10000).toString().padStart(5, 0)
 
         return parseInt(firstDigit + remainingDigits)
     }
@@ -313,6 +191,25 @@ userSchema.methods.generateVerificationCode = function () {
     // console.log("Generated Verification Code:", verificationCode);
     return verificationCode
 }
+
+userSchema.methods.generateResetPasswordLink = function () {
+    function generateLink() {
+        const randomString = randomstring.generate()
+
+        return randomString
+    }
+
+    const token = generateLink()
+    this.token = token
+    this.tokenExpire = Date.now() + 7 * 60 * 1000
+    // console.log("Generated Verification Code:", verificationCode);
+    return token
+}
+
+
+export const User = mongoose.model("User", userSchema);
+
+
 // userSchema.methods.generateRefreshToken = function (res) {
 //     const refreshToken = jwt.sign(
 //         { _id: this._id },
@@ -331,4 +228,37 @@ userSchema.methods.generateVerificationCode = function () {
 // };
 
 
-export const User = mongoose.model("User", userSchema);
+
+
+// ✅ Enrollment Fields
+// enrolled: { type: Boolean, default: false },  // If user is enrolled
+// category: { type: String, trim: true },  // Category of enrollment
+// enrolledEvents: [
+//     {
+//         eventId: { type: Schema.Types.ObjectId, ref: "Event" },
+//         enrolled: { type: Boolean, default: false },
+//         title: { type: String, required: true },
+//         category: { type: String, required: true },
+//         marks: { type: Number },
+//         startTime: { type: Date, required: true },
+//         endTime: { type: Date, required: true },
+//     },
+// ],
+
+// enrolledEvents: {
+//     type: Map,
+//     of: {
+//         type: Map,
+//         of: [{
+//             eventId: { type: Schema.Types.ObjectId, ref: "EventCategory" },
+//             enrolled: { type: Boolean, default: false },
+//             title: { type: String, required: true },
+//             marks: { type: Number },
+
+//             startTime: { type: Date, required: true },
+//             endTime: { type: Date, required: true },
+//         }]
+//     },
+//     default: () => ({})
+//         // default: () => new Map()
+// },

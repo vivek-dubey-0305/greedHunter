@@ -3,7 +3,7 @@ import { useUserContext } from "../context/UserContext";
 import toast, { Toaster } from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 
-const TUpdateProfile = () => {
+const CompleteProfile = () => {
   const { completeUserProfile, user, setUser } = useUserContext();
   const [formData, setFormData] = useState({
     gender: "",
@@ -273,4 +273,4 @@ const TUpdateProfile = () => {
   );
 };
 
-export default TUpdateProfile;
+export default CompleteProfile;

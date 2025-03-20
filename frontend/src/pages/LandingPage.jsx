@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { Sparkles, Check, X } from "lucide-react";
 import confetti from "canvas-confetti";
 import Footer from "../components/Footer";
@@ -10,11 +10,14 @@ import ProfilePopup from "../components/Popup";
 
 const LandingPage = () => {
   const navigate = useNavigate();
+
+  const {category, subcategory, eventId} = useParams()
+
   const quizStartTime = new Date();
-  quizStartTime.setDate(27);
-  quizStartTime.setMonth(1);
+  quizStartTime.setDate(8);
+  quizStartTime.setMonth(2);
   quizStartTime.setFullYear(2025);
-  quizStartTime.setHours(0, 0, 0, 0);
+  quizStartTime.setHours(11, 0, 0, 0);
 
   const [timeLeft, setTimeLeft] = useState(getTimeRemaining());
   const [isTimeUp, setIsTimeUp] = useState(false);
@@ -247,7 +250,7 @@ const LandingPage = () => {
       //   showPopup && <ProfilePopup onClose={() => setShowPopup(false)} />;
       // }
     } else {
-      navigate("/greed-quiz-hunt-00");
+      navigate(`/greed-quiz-hunt-00/${category}/${subcategory}/${eventId}`);
     }
   };
   return (

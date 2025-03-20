@@ -1,10 +1,11 @@
-import { app } from "./app.js"
+// import { app } from "./app.js"
+import { server } from "./app.js";
 import connectDB from "./database/dbConnection.js";
 
 
 connectDB()
     .then(() => {
-        app.listen(process.env.PORT || 8000, () => {
+        server.listen(process.env.PORT || 8000, () => {
             console.log("SERVER IS LISTENING AT PORT : ");
 
         });
