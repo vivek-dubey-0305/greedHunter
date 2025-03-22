@@ -13,6 +13,7 @@ import UserStats from "./pages/USerStats";
 import HeadToHeadPage from "./pages/HeadtoHead";
 import AboutUs from "./pages/AboutUsPage";
 import ContactUs from "./pages/ContactUsPage";
+import TermsAndConditionsPage from "./pages/TermsAndConditionPage";
 
 // Lazy Loading Pages
 const QuizPage = lazy(() => import("./pages/QuizPage"));
@@ -40,8 +41,8 @@ const App = () => {
 
   return (
     <>
+      {/* <div className="mt-20"> */}
       <Header />
-      <div className="pt-20">
         <Suspense fallback={<Loader />}>
           <Routes>
             <Route
@@ -124,9 +125,10 @@ const App = () => {
             <Route path="/head-to-head" element={<HeadToHeadPage />} />
             <Route path="/platform/about us" element={<AboutUs />} />
             <Route path="/platform/contact us" element={<ContactUs />} />
+            <Route path="/platform/Terms and conditions" element={<TermsAndConditionsPage />} />
           </Routes>
         </Suspense>
-      </div>
+      {/* </div> */}
     </>
   );
 };

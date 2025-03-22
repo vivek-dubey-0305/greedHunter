@@ -68,7 +68,7 @@ app.use(cors({
 app.use("/api/v1/users", userRouter)
 // app.use("/api/v1/quiz", quizRouter)
 app.use("/api/v1/admin", adminRouter)
-app.use("/api/v1/leaderboard", leaderboardRouter);
+// app.use("/api/v1/leaderboard", leaderboardRouter);
 
 app.use(errorMiddleware)
 

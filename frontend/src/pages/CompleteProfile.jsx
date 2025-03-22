@@ -36,7 +36,7 @@ const CompleteProfile = () => {
         ...updateUSerResponse.user,
       }));
       toast.success(updateUSerResponse.message);
-      navigate("/greed-of-sanskrit");
+      navigate(-1);
     } catch (error) {
       // console.log("updateUSerError:\n", error);
       // console.log("updateUSerError:\n", error.message);

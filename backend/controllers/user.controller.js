@@ -1196,6 +1196,19 @@ const updateMarks = asyncHandler(async (req, res, next) => {
             return next(new ErrorHandler("User or event not found", 404));
         }
 
+                io.emit("leaderboardUpdate", {
+            category,
+            subcategory,
+            eventId,
+            updatedUser: {
+                fullName: user.fullName,
+                enrollmentNumber: user.enrollmentNumber,
+                marks: marks,
+                category: category,
+                subcategory: subcategory
+            }
+        });
+
         return res.status(200).json({
             success: true,
             message: "Marks updated successfully",

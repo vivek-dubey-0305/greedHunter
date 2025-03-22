@@ -117,7 +117,7 @@ const Header = () => {
 
   return (
     <nav
-      className="bg-black text-white fixed top-0 left-0 right-0 border-b-2 border-b-yellow-400/40 z-50"
+      className="bg-black text-white sticky top-0 left-0 right-0 border-b-2 border-b-yellow-400/40 z-20"
       ref={navRef}
     >
       <div className="container mx-auto px-4 py-2 sm:px-6 lg:px-8">

@@ -118,6 +118,13 @@ const Footer = () => {
             <span className="text-gray-300 group-hover:text-green-300 transition-colors">Privacy Policy</span>
           </a>
           
+          <a href="/platform/Terms and conditions" className="flex items-center gap-2 group">
+            <span className="p-2 bg-gray-800 rounded-full group-hover:bg-red-700 transition-colors">
+              <FileText className="h-4 w-4 text-white" />
+            </span>
+            <span className="text-gray-300 group-hover:text-red-400 transition-colors">T&C</span>
+          </a>
+          
           <a href="/platform/support us" className="flex items-center gap-2 group px-4 py-2 bg-gradient-to-r from-purple-600 to-pink-500 rounded-full hover:from-pink-500 hover:to-purple-600 transition-all">
             <Heart className="h-4 w-4 text-white" />
             <span className="text-white font-medium">Support Us</span>

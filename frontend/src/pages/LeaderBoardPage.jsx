@@ -7,7 +7,7 @@
 
 // import { io } from "socket.io-client";
 
-// // const socket = io("http://localhost:8000"); // ✅ Connect to WebSocket server
+// // // const socket = io("http://localhost:8000"); // ✅ Connect to WebSocket server
 // const socket = io("http://localhost:8000", { transports: ["websocket"] });
 
 // const LeaderBoardPage = () => {
@@ -91,6 +91,7 @@
 //   };
 
 //   useEffect(() => {
+
 //     // ✅ Listen for real-time leaderboard updates
 //     socket.on("leaderboardUpdate", (data) => {
 //       console.log("Leaderboard Updated:", data);
@@ -205,7 +206,7 @@
 //                     <>
 //                       {/* <tr key={usr.username} className="border-b text-green-700">
 //                           <td className="p-3 font-semibold text-white">  {`${usr.isPlayed}`}</td>
-                      
+
 //                         </tr> */}
 
 //                       <tr key={usr._id} className="border-b text-white">
@@ -687,11 +688,6 @@
 
 // export default LeaderBoardPage;
 
-
-
-
-
-
 // import React, { useState, useEffect } from "react";
 // import { useUserContext } from "../context/UserContext";
 // import { Crown, Sparkles } from "lucide-react";
@@ -822,31 +818,81 @@
 
 // export default LeaderBoardPage;
 
-
-
-
-
-
 import React, { useState, useEffect } from "react";
 import { useUserContext } from "../context/UserContext";
 import { Crown, Sparkles } from "lucide-react";
 import Footer from "../components/Footer";
 import Loader from "../components/Loader"; // Import Loader component
 
+import { io } from "socket.io-client";
+
+const socket = io("http://localhost:8000", { transports: ["websocket"] });
+
 const LeaderBoardPage = () => {
   const { user, getUsers } = useUserContext();
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(false); // Loader state
+  const [refreshedClick, setRefreshedClick] = useState(false);
 
   useEffect(() => {
-    handleGetUsers();
+    handleGetUsers(); // Initial fetch on component mount
+
+    // Listen for real-time leaderboard updates from the backend
+    socket.on("leaderboardUpdate", (data) => {
+      console.log("🔄 Live Leaderboard Update Received:", data);
+
+      // Update the leaderboard state without affecting the loader
+      setUsers((prevUsers) => {
+        const updatedUsers = [...prevUsers];
+
+        // Check if the user already exists
+        const existingUserIndex = updatedUsers.findIndex(
+          (usr) => usr.enrollmentNumber === data.updatedUser.enrollmentNumber
+        );
+
+        if (existingUserIndex !== -1) {
+          // Update existing user marks
+          updatedUsers[existingUserIndex] = {
+            ...updatedUsers[existingUserIndex],
+            highestEvent: {
+              ...updatedUsers[existingUserIndex].highestEvent,
+              marks: data.updatedUser.marks,
+            },
+          };
+        } else {
+          // Add new user to leaderboard
+          updatedUsers.push({
+            fullName: data.updatedUser.fullName,
+            enrollmentNumber: data.updatedUser.enrollmentNumber,
+            highestEvent: {
+              marks: data.updatedUser.marks,
+              category: data.updatedUser.category,
+              subcategory: data.updatedUser.subcategory,
+            },
+          });
+        }
+
+        // Sort by highest marks
+        return updatedUsers.sort(
+          (a, b) => (b.highestEvent.marks || 0) - (a.highestEvent.marks || 0)
+        );
+      });
+    });
+
+    // Cleanup listener when component unmounts
+    return () => {
+      socket.off("leaderboardUpdate");
+    };
   }, []);
 
   const handleGetUsers = async () => {
-    setLoading(true); // Show loader
-    try {
+console.log(refreshedClick)
+try {
+      if (refreshedClick) {
+        setLoading(true); // Show loader
+      }
       const response = await getUsers();
-      console.log("ALL USERS RESPONSE:", response);
+      // console.log("ALL USERS RESPONSE:", response);
 
       if (response?.data?.users) {
         setUsers(response.data.users);
@@ -857,8 +903,10 @@ const LeaderBoardPage = () => {
       window.prompt(
         "No User Found...please try again after a while, or contact the developer\nPlease Write your valuable feedback here!"
       );
+    } finally {
+      setLoading(false); // Hide loader
+      setRefreshedClick(false);
     }
-    setLoading(false); // Hide loader
   };
 
   return (
@@ -899,7 +947,8 @@ const LeaderBoardPage = () => {
                     .filter((usr) => usr.highestEvent.marks !== undefined) // Remove users without marks
                     .sort(
                       (a, b) =>
-                        (b.highestEvent.marks || 0) - (a.highestEvent.marks || 0)
+                        (b.highestEvent.marks || 0) -
+                        (a.highestEvent.marks || 0)
                     )
                     .map((usr, index) => (
                       <tr
@@ -939,7 +988,9 @@ const LeaderBoardPage = () => {
                           )}
                           {index + 1}
                         </td>
-                        <td className="py-3 px-5 font-semibold">{usr?.fullName}</td>
+                        <td className="py-3 px-5 font-semibold">
+                          {usr?.fullName}
+                        </td>
                         <td className="py-3 px-5">
                           {usr.enrollmentNumber || usr.rollNumber}
                         </td>
