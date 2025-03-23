@@ -2,7 +2,7 @@ import { response } from "express";
 import { asyncHandler } from "../middleware/asyncHandler.middleware.js";
 import ErrorHandler from "../middleware/error.middleware.js";
 import { User } from "../models/user.model.js";
-import { sendEmail } from "../utils/mail.util.js";
+import { recieveEmail, sendEmail } from "../utils/mail.util.js";
 import { DynamicData } from "../models/quiz.model.js";
 import { EventCategory } from "../models/event.model.js";
 import jwt from "jsonwebtoken";
@@ -885,7 +885,7 @@ const refreshAccessToken = asyncHandler(async (req, res, next) => {
 
 const updateProfile = asyncHandler(async (req, res, next) => {
     const userId = req.user._id
-    const { username, fullName, email, phone, gender, social_links={} } = req.body
+    const { username, fullName, email, phone, gender, social_links = {} } = req.body
     // console.log("req.body[registerUser]:\n", req.body)
 
     const requiredFields = [username, fullName, email, phone]
@@ -1038,11 +1038,36 @@ const changeCurrentPassword = asyncHandler(async (req, res, next) => {
 
 //     }
 // })
+//!-----------------
+// const getQuizBySubCategory = asyncHandler(async (req, res, next) => {
+//     try {
+//         const { category, subcategory } = req.params;
+//         console.log("SUBCATEGOR", category, subcategory)
+
+//         const quizData = await DynamicData.findOne({
+//             category: category,
+//             subCategory: subcategory
+//         });
+
+//         if (!quizData) {
+//             return res.status(404).json({ message: "No quiz found for this subcategory" });
+//         }
+// // console.log(quizData)
+//         return res.status(200).json({questions :quizData.data.questions, time:quizData.time});
+
+//     } catch (error) {
+//         console.error("Error fetching quiz:", error);
+//         return next(new ErrorHandler(`INTERnal server error as:\n${error.message}`, 403))
+//     }
+// });
+
+
+const quizStartTimes = {}; // Store quiz start times in memory
 
 const getQuizBySubCategory = asyncHandler(async (req, res, next) => {
     try {
         const { category, subcategory } = req.params;
-        console.log("SUBCATEGOR", category, subcategory)
+        console.log("Fetching Quiz for:", category, subcategory);
 
         const quizData = await DynamicData.findOne({
             category: category,
@@ -1050,14 +1075,31 @@ const getQuizBySubCategory = asyncHandler(async (req, res, next) => {
         });
 
         if (!quizData) {
-            return res.status(404).json({ message: "No quiz found for this subcategory" });
+            return next(new ErrorHandler("No quiz found for this subcategory", 404))
+            // return res.status(404).json({ message: " });
         }
 
-        return res.status(200).json(quizData.data.questions);
+        const quizKey = `${category}_${subcategory}`;
+        const quizDuration = quizData.time * 60 * 1000; // Convert minutes to milliseconds
+
+        // If quiz start time does not exist, set it
+        if (!quizStartTimes[quizKey]) {
+            quizStartTimes[quizKey] = Date.now();
+        }
+
+        // Calculate the elapsed time and remaining time
+        const elapsedTime = Date.now() - quizStartTimes[quizKey];
+        const remainingTime = Math.max(quizDuration - elapsedTime, 0);
+
+        return res.status(200).json({
+            questions: quizData.data.questions,
+            timeLeft: Math.floor(remainingTime / 1000), // Convert milliseconds to seconds
+            totalTime: quizData.time * 60
+        });
 
     } catch (error) {
         console.error("Error fetching quiz:", error);
-        return next(new ErrorHandler(`INTERnal server error as:\n${error.message}`, 403))
+        return next(new ErrorHandler(`Internal server error:\n${error.message}`, 500));
     }
 });
 
@@ -1164,31 +1206,57 @@ const getEventById = asyncHandler(async (req, res, next) => {
 
 const updateMarks = asyncHandler(async (req, res, next) => {
     try {
-        const { marks, category, subcategory, eventId, isPlayed } = req.body;
+        const { marks, category, subcategory, eventId, isPlayed, winTime } = req.body;
         const userId = req.user._id;
 
-        console.log("MARKS UPDATE PAYLOAD:\n", { marks, userId, category, subcategory, eventId, isPlayed });
+        console.log("MARKS UPDATE PAYLOAD:\n", { marks, userId, category, subcategory, eventId, isPlayed, winTime });
 
         if (!userId) {
             return next(new ErrorHandler("Cannot find user. Please contact the developer.", 400));
         }
 
         // ✅ Find & update enrolledEvents where eventId, category, and subcategory match
+        // const user = await User.findOneAndUpdate(
+        //     {
+        //         _id: userId,
+        //         "enrolledEvents.eventId": eventId,  // Match the correct eventId
+        //         "enrolledEvents.category": category,
+        //         "enrolledEvents.subcategory": subcategory
+        //     },
+        //     {
+        //         $set: {
+        //             "enrolledEvents.$.marks": marks, // ✅ Update marks directly
+        //             "enrolledEvents.$.winTime": winTime,
+        //             "enrolledEvents.$.isPlayed": isPlayed // ✅ Also update `isPlayed` if needed
+        //         }
+        //     },
+        //     { new: true, runValidators: true }
+        // );
+
         const user = await User.findOneAndUpdate(
             {
-                _id: userId,
-                "enrolledEvents.eventId": eventId,  // Match the correct eventId
-                "enrolledEvents.category": category,
-                "enrolledEvents.subcategory": subcategory
+                _id: userId
             },
             {
                 $set: {
-                    "enrolledEvents.$.marks": marks, // ✅ Update marks directly
-                    "enrolledEvents.$.isPlayed": isPlayed // ✅ Also update `isPlayed` if needed
+                    "enrolledEvents.$[elem].marks": marks,
+                    "enrolledEvents.$[elem].winTime": winTime,
+                    "enrolledEvents.$[elem].isPlayed": isPlayed
                 }
             },
-            { new: true, runValidators: true }
+            {
+                new: true,
+                runValidators: true,
+                arrayFilters: [
+                    {
+                        "elem.eventId": eventId,  // ✅ Exact match for eventId inside the array
+                        "elem.category": category,
+                        "elem.subcategory": subcategory
+                    }
+                ]
+            }
         );
+
 
         console.log("UPDATED USER:\n", user);
 
@@ -1196,7 +1264,7 @@ const updateMarks = asyncHandler(async (req, res, next) => {
             return next(new ErrorHandler("User or event not found", 404));
         }
 
-                io.emit("leaderboardUpdate", {
+        io.emit("leaderboardUpdate", {
             category,
             subcategory,
             eventId,
@@ -1351,6 +1419,157 @@ const getUsers = asyncHandler(async (req, res, next) => {
 })
 
 
+
+
+
+const sendMailTotopTen = asyncHandler(async (req, res, next) => {
+    try {
+        const users = await User.find({}, "fullName email enrolledEvents");
+
+        // ✅ Get Top 10 Users based on highest marks and lowest winTime
+        const leaderboard = users
+            .map((usr) => ({
+                fullName: usr.fullName,
+                email: usr.email,
+                highestEvent:
+                    usr.enrolledEvents?.reduce(
+                        (max, event) =>
+                            event.marks > (max?.marks || 0) ||
+                                (event.marks === max?.marks && event.winTime < max?.winTime)
+                                ? event
+                                : max,
+                        {}
+                    ) || {},
+            }))
+            .filter((usr) => usr.highestEvent.marks !== undefined)
+            .sort((a, b) => {
+                if ((b.highestEvent.marks || 0) !== (a.highestEvent.marks || 0)) {
+                    return (b.highestEvent.marks || 0) - (a.highestEvent.marks || 0);
+                } else {
+                    return (a.highestEvent.winTime || Infinity) - (b.highestEvent.winTime || Infinity);
+                }
+            })
+            .slice(0, 10);
+
+        if (leaderboard.length === 0) {
+            return res.status(404).json({ success: false, message: "No top users found" });
+        }
+
+        // ✅ Send custom emails to Top 3 Users
+        for (let i = 0; i < leaderboard.length; i++) {
+            const user = leaderboard[i];
+
+            let subject, message;
+
+            if (i === 0) {
+                // 🥇 First Place Winner
+                subject = "🏆 You Are The Champion! #1 on Leaderboard!";
+                message = `
+                    <h2>🎉 Congratulations, ${user.fullName}! 🎉</h2>
+                    <p>You've claimed the <strong>1st place</strong> on the leaderboard! 🥇</p>
+                    <ul>
+                        <li><strong>Category:</strong> ${user.highestEvent.category || "N/A"}</li>
+                        <li><strong>Subcategory:</strong> ${user.highestEvent.subcategory || "N/A"}</li>
+                        <li><strong>Marks:</strong> ${user.highestEvent.marks}</li>
+                        <li><strong>Completion Time:</strong> ${user.highestEvent.winTime} seconds</li>
+                    </ul>
+                    <p>You are the ultimate GreedHunter Champion! Keep dominating! 🚀🔥</p>
+                    <br>
+                    <p>Best regards,<br><strong>GreedHunter Team</strong></p>
+                `;
+            } else if (i === 1) {
+                // 🥈 Second Place Winner
+                subject = "🥈 Amazing! You Secured 2nd Place!";
+                message = `
+                    <h2>🎉 Great Job, ${user.fullName}! 🎉</h2>
+                    <p>You secured the <strong>2nd place</strong> on the leaderboard! 🥈</p>
+                    <ul>
+                        <li><strong>Category:</strong> ${user.highestEvent.category || "N/A"}</li>
+                        <li><strong>Subcategory:</strong> ${user.highestEvent.subcategory || "N/A"}</li>
+                        <li><strong>Marks:</strong> ${user.highestEvent.marks}</li>
+                        <li><strong>Completion Time:</strong> ${user.highestEvent.winTime} seconds</li>
+                    </ul>
+                    <p>You're just one step away from the top! Keep pushing! 💪🔥</p>
+                    <br>
+                    <p>Best regards,<br><strong>GreedHunter Team</strong></p>
+                `;
+            } else if (i === 2) {
+                // 🥉 Third Place Winner
+                subject = "🥉 You Made It! 3rd Place on Leaderboard!";
+                message = `
+                    <h2>🎉 Well Done, ${user.fullName}! 🎉</h2>
+                    <p>You earned the <strong>3rd place</strong> on the leaderboard! 🥉</p>
+                    <ul>
+                        <li><strong>Category:</strong> ${user.highestEvent.category || "N/A"}</li>
+                        <li><strong>Subcategory:</strong> ${user.highestEvent.subcategory || "N/A"}</li>
+                        <li><strong>Marks:</strong> ${user.highestEvent.marks}</li>
+                        <li><strong>Completion Time:</strong> ${user.highestEvent.winTime} seconds</li>
+                    </ul>
+                    <p>You're among the best! Keep up the amazing work! 🔥</p>
+                    <br>
+                    <p>Best regards,<br><strong>GreedHunter Team</strong></p>
+                `;
+            } else {
+                // 📩 Generic email for ranks 4-10
+                subject = "🎯 You're in the Top 10! Keep Going!";
+                message = `
+                    <h2>🎉 Congratulations, ${user.fullName}! 🎉</h2>
+                    <p>You have secured a top position in the leaderboard with:</p>
+                    <ul>
+                        <li><strong>Category:</strong> ${user.highestEvent.category || "N/A"}</li>
+                        <li><strong>Subcategory:</strong> ${user.highestEvent.subcategory || "N/A"}</li>
+                        <li><strong>Marks:</strong> ${user.highestEvent.marks}</li>
+                        <li><strong>Completion Time:</strong> ${user.highestEvent.winTime} seconds</li>
+                    </ul>
+                    <p>You're on the right track! Keep competing and improving! 💪🔥</p>
+                    <br>
+                    <p>Best regards,<br><strong>GreedHunter Team</strong></p>
+                `;
+            }
+
+            await sendEmail({
+                email: user.email,
+                subject,
+                message,
+            });
+        }
+
+        return res.status(200).json({
+            success: true,
+            message: "Emails sent successfully to the top 10 users",
+            topUsers: leaderboard,
+        });
+
+    } catch (error) {
+        console.error("❌ Error fetching & emailing top users:", error);
+        return res.status(500).json({ success: false, message: "Error processing request" });
+    }
+});
+
+
+
+
+const userContactMail = asyncHandler(async (req, res, next) => {
+    try {
+        const { name, email, subject, message } = req.body;
+        console.log( { name, email, subject, message } )
+
+        if (!name || !email || !subject || !message) {
+            return res.status(400).json({ success: false, message: "All fields are required!" });
+        }
+
+        await recieveEmail({ name, email, subject, message });
+
+        return res.status(200).json({ success: true, message: "Your message has been sent successfully!" });
+    } catch (error) {
+        console.error("Email Error:", error);
+        return next(new ErrorHandler(`Failed to send email.\n\n${error}`, 500))
+        //   return res.status(500).json({ success: false, message:  });
+    }
+});
+
+
+
 export {
     register,
     login,
@@ -1376,5 +1595,8 @@ export {
 
     updateMarks,
     getUsers,
+
+    sendMailTotopTen,
+    userContactMail
 }
 

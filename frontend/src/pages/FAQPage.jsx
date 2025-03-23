@@ -1,125 +1,8 @@
-// import React, { useState, useEffect } from "react";
 import { greedHuntFAQ } from "../utils/data.js"; // Import FAQ data
-// import { Search, ChevronDown, ChevronUp } from "lucide-react"; // Icons
-
-// const FAQPage = () => {
-//   const [query, setQuery] = useState(""); // Search Query
-//   const [selectedCategory, setSelectedCategory] = useState("All");
-//   const [filteredFAQs, setFilteredFAQs] = useState([]);
-//   const [openIndex, setOpenIndex] = useState(null); // Stores index of open FAQ
-
-//   // Extract unique categories
-//   const categories = ["All", ...new Set(greedHuntFAQ.map((faq) => faq.questionCategory))];
-
-//   // Filter questions dynamically
-//   useEffect(() => {
-//     let results = greedHuntFAQ.filter((faq) =>
-//       faq.question.toLowerCase().includes(query.toLowerCase())
-//     );
-
-//     if (selectedCategory !== "All") {
-//       results = results.filter((faq) => faq.questionCategory === selectedCategory);
-//     }
-
-//     // Auto-update category based on search results
-//     if (query) {
-//       const foundCategory = results.length > 0 ? results[0].questionCategory : "All";
-//       setSelectedCategory(foundCategory);
-//     }
-
-//     setFilteredFAQs(results);
-//   }, [query, selectedCategory]);
-
-//   // Toggle specific question open/close
-//   const toggleFAQ = (index) => {
-//     setOpenIndex((prevIndex) => (prevIndex === index ? null : index));
-//   };
-
-//   return (
-//     <div className="min-h-screen bg-gray-900 text-white p-6">
-//       <div className="max-w-4xl mx-auto">
-//         {/* Page Title */}
-//         <h1 className="text-3xl font-bold text-center text-yellow-400 mb-6">
-//           GreedHunt FAQ
-//         </h1>
-
-//         {/* Search Input */}
-//         <div className="flex items-center bg-gray-800 p-2 rounded-lg mb-4 shadow-lg">
-//           <Search className="text-gray-400 ml-2" />
-//           <input
-//             type="text"
-//             className="bg-transparent text-white p-2 flex-1 outline-none"
-//             placeholder="Search for a question..."
-//             value={query}
-//             onChange={(e) => setQuery(e.target.value)}
-//           />
-//         </div>
-
-//         {/* Category Filter */}
-//         <div className="flex space-x-2 overflow-x-auto scrollbar-hide mb-4">
-//           {categories.map((category) => (
-//             <button
-//               key={category}
-//               className={`px-4 py-2 rounded-md font-semibold transition-all ${
-//                 selectedCategory === category
-//                   ? "bg-purple-600 text-white"
-//                   : "bg-gray-700 text-gray-300 hover:bg-purple-500"
-//               }`}
-//               onClick={() => setSelectedCategory(category)}
-//             >
-//               {category}
-//             </button>
-//           ))}
-//         </div>
-
-//         {/* FAQ List */}
-//         <div className="space-y-4">
-//           {filteredFAQs.length > 0 ? (
-//             filteredFAQs.map((faq, index) => (
-//               <div
-//                 key={index}
-//                 className="bg-gray-800 p-4 rounded-lg shadow-md transition-all hover:shadow-lg hover:bg-gray-700"
-//               >
-//                 {/* Question with Chevron */}
-//                 <div
-//                   className="flex justify-between items-center cursor-pointer"
-//                   onClick={() => toggleFAQ(index)}
-//                 >
-//                   <h3 className="text-lg font-semibold text-purple-300">
-//                     {faq.question}
-//                   </h3>
-//                   {openIndex === index ? (
-//                     <ChevronUp className="text-purple-400" />
-//                   ) : (
-//                     <ChevronDown className="text-purple-400" />
-//                   )}
-//                 </div>
-
-//                 {/* Answer - only visible if open */}
-//                 {openIndex === index && (
-//                   <p className="text-gray-400 mt-2 transition-all duration-300 ease-in-out">
-//                     {faq.answer}
-//                   </p>
-//                 )}
-//               </div>
-//             ))
-//           ) : (
-//             <p className="text-center text-gray-400">No questions found.</p>
-//           )}
-//         </div>
-//       </div>
-//     </div>
-//   );
-// };
-
-// export default FAQPage;
-
-
 import React, { useState, useEffect } from "react";
 import { Search, ChevronDown, ChevronUp } from "lucide-react"; // Icons
 
 // Sample data for testing - replace with your actual data import
-
 
 const FAQPage = () => {
   const [query, setQuery] = useState(""); // Search Query
@@ -129,12 +12,15 @@ const FAQPage = () => {
   const [isSearchFocused, setIsSearchFocused] = useState(false);
 
   // Extract unique categories
-  const categories = ["All", ...new Set(greedHuntFAQ.map((faq) => faq.questionCategory))];
+  const categories = [
+    "All",
+    ...new Set(greedHuntFAQ.map((faq) => faq.questionCategory)),
+  ];
 
   // Filter questions dynamically when query or category changes
   useEffect(() => {
     let results = greedHuntFAQ;
-    
+
     // Apply search filter if query exists
     if (query.trim() !== "") {
       results = results.filter((faq) =>
@@ -144,11 +30,13 @@ const FAQPage = () => {
 
     // Apply category filter if not "All"
     if (selectedCategory !== "All") {
-      results = results.filter((faq) => faq.questionCategory === selectedCategory);
+      results = results.filter(
+        (faq) => faq.questionCategory === selectedCategory
+      );
     }
 
     setFilteredFAQs(results);
-    
+
     // Fixed logic: Don't auto-change category based on search results
     // This was causing confusion in the original code
   }, [query, selectedCategory]);
@@ -160,8 +48,6 @@ const FAQPage = () => {
 
   return (
     <div className="min-h-screen bg-black text-white">
-
-
       <main className="container mx-auto px-6 py-12">
         <div className="text-center mb-12">
           <h1 className="text-4xl font-extrabold mb-2">
@@ -169,15 +55,18 @@ const FAQPage = () => {
             <span className="text-purple-600">Asked Questions</span>
           </h1>
           <p className="text-gray-400 max-w-2xl mx-auto">
-            Find answers to common questions about GreedHunter, our mission, and how you can get involved.
+            Find answers to common questions about GreedHunter, our mission, and
+            how you can get involved.
           </p>
         </div>
 
         <div className="max-w-4xl mx-auto">
           {/* Search Input */}
-          <div className={`flex items-center bg-gray-900 p-3 rounded-lg mb-6 shadow-lg border transition-all duration-300 ${
-            isSearchFocused ? "border-purple-500" : "border-gray-700"
-          }`}>
+          <div
+            className={`flex items-center bg-gray-900 p-3 rounded-lg mb-6 shadow-lg border transition-all duration-300 ${
+              isSearchFocused ? "border-purple-500" : "border-gray-700"
+            }`}
+          >
             <Search className="text-yellow-400 ml-2" size={20} />
             <input
               type="text"
@@ -231,30 +120,30 @@ const FAQPage = () => {
                   </div>
 
                   {/* Answer - with smooth transition */}
-                  <div 
+                  <div
                     className={`overflow-hidden transition-all duration-300 ease-in-out ${
                       openIndex === index ? "max-h-96 mt-4" : "max-h-0"
                     }`}
                   >
-                    <p className="text-gray-300">
-                      {faq.answer}
-                    </p>
+                    <p className="text-gray-300">{faq.answer}</p>
                   </div>
                 </div>
               ))
             ) : (
               <div className="text-center py-12 bg-gray-900 rounded-lg border border-gray-800">
                 <div className="text-5xl mb-4 text-yellow-400">🔍</div>
-                <h3 className="text-xl font-bold text-purple-400 mb-2">No Questions Found</h3>
+                <h3 className="text-xl font-bold text-purple-400 mb-2">
+                  No Questions Found
+                </h3>
                 <p className="text-gray-400">
-                  Try adjusting your search terms or select a different category.
+                  Try adjusting your search terms or select a different
+                  category.
                 </p>
               </div>
             )}
           </div>
         </div>
       </main>
-      
     </div>
   );
 };

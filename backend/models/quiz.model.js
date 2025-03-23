@@ -55,7 +55,10 @@ const dynamicSchema = new Schema(
             required: true,
             trim: true, // AI, Maths, CyberSecurity for Quiz, Puzzle for Game, etc.
         },
-        
+        time: {
+            type: Number,
+            required: true
+        },
         data: {
             type: Schema.Types.Mixed, // Stores different structures dynamically
             required: true,

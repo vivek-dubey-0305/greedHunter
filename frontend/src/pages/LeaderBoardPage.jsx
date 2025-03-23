@@ -832,7 +832,7 @@ const LeaderBoardPage = () => {
   const { user, getUsers } = useUserContext();
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(false); // Loader state
-  const [refreshedClick, setRefreshedClick] = useState(false);
+  // const [refreshedClick, setRefreshedClick] = useState(false);
 
   useEffect(() => {
     handleGetUsers(); // Initial fetch on component mount
@@ -868,13 +868,16 @@ const LeaderBoardPage = () => {
               marks: data.updatedUser.marks,
               category: data.updatedUser.category,
               subcategory: data.updatedUser.subcategory,
+              winTime: data.updatedUser.winTime,
             },
           });
         }
 
         // Sort by highest marks
         return updatedUsers.sort(
-          (a, b) => (b.highestEvent.marks || 0) - (a.highestEvent.marks || 0)
+          (a, b) =>
+            (b.highestEvent.marks || 0) - (a.highestEvent.marks || 0) &&
+            (b.highestEvent.winTime || 0) - (a.highestEvent.winTime || 0)
         );
       });
     });
@@ -886,11 +889,11 @@ const LeaderBoardPage = () => {
   }, []);
 
   const handleGetUsers = async () => {
-console.log(refreshedClick)
-try {
-      if (refreshedClick) {
-        setLoading(true); // Show loader
-      }
+    // console.log(refreshedClick)
+    try {
+      // if (refreshedClick) {
+      // }
+      setLoading(true); // Show loader
       const response = await getUsers();
       // console.log("ALL USERS RESPONSE:", response);
 
@@ -905,7 +908,7 @@ try {
       );
     } finally {
       setLoading(false); // Hide loader
-      setRefreshedClick(false);
+      // setRefreshedClick(false);
     }
   };
 
@@ -936,20 +939,34 @@ try {
                   users
                     .map((usr) => ({
                       ...usr,
-                      // Get highest marks from enrolled events
                       highestEvent:
                         usr.enrolledEvents?.reduce(
                           (max, event) =>
-                            event.marks > (max?.marks || 0) ? event : max,
+                            event.marks > (max?.marks || 0) ||
+                            (event.marks === max?.marks &&
+                              event.winTime < max?.winTime) // ✅ Sort by marks, then winTime
+                              ? event
+                              : max,
                           {}
                         ) || {},
                     }))
                     .filter((usr) => usr.highestEvent.marks !== undefined) // Remove users without marks
-                    .sort(
-                      (a, b) =>
-                        (b.highestEvent.marks || 0) -
+                    .sort((a, b) => {
+                      if (
+                        (b.highestEvent.marks || 0) !==
                         (a.highestEvent.marks || 0)
-                    )
+                      ) {
+                        return (
+                          (b.highestEvent.marks || 0) -
+                          (a.highestEvent.marks || 0)
+                        ); // Highest marks first
+                      } else {
+                        return (
+                          (a.highestEvent.winTime || Infinity) -
+                          (b.highestEvent.winTime || Infinity)
+                        ); // Least time wins
+                      }
+                    })
                     .map((usr, index) => (
                       <tr
                         key={usr._id}

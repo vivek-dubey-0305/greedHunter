@@ -44,7 +44,9 @@ const userSchema = new Schema(
                 isPlayed: { type: Boolean, default: false },  // ✅ User-specific data
                 marks: { type: Number, default: 0 },  // ✅ User-specific data
                 rank: { type: Number, default: 0 },  // ✅ User-specific data
-                won: { type: Boolean, default: false }  // ✅ User-specific data
+                won: { type: Boolean, default: false },  // ✅ User-specific data/
+                winTime: { type: Number,},  
+
             }
         ],
 

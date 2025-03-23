@@ -34,6 +34,7 @@ const Dashboard = () => {
         let enrolled =
           user?.enrolledEvents?.map((enrollment) => ({
             ...enrollment.eventId, // Populated event details
+            eventCategory: enrollment.eventCategory,
             subcategory: enrollment.subcategory,
             category: enrollment.category,
             categoryId: enrollment.eventId,
@@ -292,7 +293,7 @@ const Dashboard = () => {
                   onClick={() =>
                     activeSubTab === "Enrolled"
                         ? navigate(
-                          `/greed-of-event/${event.category}/${event.subcategory}/${event.categoryId}`
+                          `/greed-of-event/${event.category}/${event.eventCategory}/${event.subcategory}/${event.categoryId}`
                           )
                         : navigate(
                             `/event/${event.category}/${event.subcategory}/${event._id}`

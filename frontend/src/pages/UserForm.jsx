@@ -295,7 +295,7 @@ const UserForm = () => {
           />
 
           {isLogin && (
-            <div className="ml-1 fixed w-98">
+            
               <motion.span
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
@@ -305,7 +305,7 @@ const UserForm = () => {
               >
                 Forgot password?
               </motion.span>
-            </div>
+          
           )}
 
           <motion.button

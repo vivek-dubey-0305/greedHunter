@@ -10,8 +10,8 @@ export const QuizProvider = ({ children }) => {
     try {
       console.log("QuizCategory", category,subcategory)
       const response = await apiUser.get(`/getquizQuestions/${category}/${subcategory}`);
-      // console.log("GetquizQuestionReponse", response);
-      return response;
+      console.log("GetquizQuestionReponse", response);
+      return response.data;
     } catch (error) {
       console.error("error Q", error);
       return error;

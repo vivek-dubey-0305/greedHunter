@@ -331,6 +331,7 @@ export const UserProvider = ({ children }) => {
     subcategory,
     eventId,
     isPlayed,
+    winTime,
   }) => {
     try {
       // console.log("MARKS AND PGONE NUMBER..\n", marks, phone);
@@ -341,6 +342,7 @@ export const UserProvider = ({ children }) => {
         subcategory,
         eventId,
         isPlayed,
+        winTime,
       });
       console.log("REsponse update marks..\n", response);
       return response;
@@ -367,6 +369,34 @@ export const UserProvider = ({ children }) => {
     }
   };
 
+  const sendTopUserEmails = async () => {
+    try {
+      const response = await apiUser.get("/sendMailToTopTen");
+      console.log("📧 Emails sent to top users:", response.data);
+      alert("Emails sent successfully to the top 10 users!");
+    } catch (error) {
+      console.error("Error sending emails:", error);
+      alert("Failed to send emails. Try again later.");
+    }
+  };
+
+  const sendMailToHunter = async ({ name, email, subject, message }) => {
+    console.log("details...\n", { name, email, subject, message });
+    try {
+      const response = await apiUser.post("/sendMailToHunter", {
+        name,
+        email,
+        subject,
+        message,
+      });
+      console.log("📧 Emails sent", response.data);
+      console.log("📧 Emails sent to huntre", response);
+      // alert("Emails sent successfully to the top 10 users!");
+    } catch (error) {
+      console.error("Error sending emails:", error);
+      alert("Failed to send emails. Try again later.");
+    }
+  };
   return (
     <UserContext.Provider
       value={{
@@ -396,6 +426,8 @@ export const UserProvider = ({ children }) => {
         loading,
 
         setIsRegistered,
+        sendTopUserEmails,
+        sendMailToHunter,
 
         // user,
       }}

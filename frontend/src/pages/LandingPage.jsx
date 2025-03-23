@@ -11,7 +11,7 @@ import ProfilePopup from "../components/Popup";
 const LandingPage = () => {
   const navigate = useNavigate();
 
-  const {category, subcategory, eventId} = useParams()
+  const {category, eventCategory, subcategory, eventId} = useParams()
 
   const quizStartTime = new Date();
   quizStartTime.setDate(8);
@@ -250,7 +250,7 @@ const LandingPage = () => {
       //   showPopup && <ProfilePopup onClose={() => setShowPopup(false)} />;
       // }
     } else {
-      navigate(`/greed-quiz-hunt-00/${category}/${subcategory}/${eventId}`);
+      navigate(`/greed-quiz-hunt-00/${category}/${eventCategory}/${subcategory}/${eventId}`);
     }
   };
   return (

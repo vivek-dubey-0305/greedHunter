@@ -130,14 +130,17 @@
 
 // export default AboutUs;
 
-
 import { motion, useAnimation } from "framer-motion";
 import { useInView } from "react-intersection-observer";
 import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { useUserContext } from "../context/UserContext";
 
 const AboutUs = () => {
   const controls = useAnimation();
   const [ref, inView] = useInView();
+  const { user } = useUserContext();
+  const navigate = useNavigate();
 
   // Animation variants
   const sectionVariants = {
@@ -223,7 +226,9 @@ const AboutUs = () => {
             variants={item}
             className="text-xl text-gray-300 max-w-2xl mx-auto leading-relaxed"
           >
-            Welcome to GreedHunter – The ultimate battleground where knowledge meets competition. We bring students together to learn, compete, and win exciting prizes!
+            Welcome to GreedHunter – The ultimate battleground where knowledge
+            meets competition. We bring students together to learn, compete, and
+            win exciting prizes!
           </motion.p>
         </motion.section>
 
@@ -241,14 +246,16 @@ const AboutUs = () => {
               whileInView={{ x: 0, opacity: 1 }}
               transition={{ delay: 0.2 }}
             >
-              <h2 className="text-3xl font-bold mb-6 text-yellow-300">Our Mission</h2>
+              <h2 className="text-3xl font-bold mb-6 text-yellow-300">
+                Our Mission
+              </h2>
               <ul className="space-y-4">
                 {[
                   "Empowering Learning Through Gamification – Making education exciting by integrating quizzes, games, and challenges.",
                   "Providing Real-World Rewards – Students can earn prizes, certificates, and recognition for their knowledge and skills.",
                   "Encouraging Healthy Competition – A platform where students compete against peers to improve their abilities.",
                   "Building a Knowledge-Driven Community – Connecting students from different backgrounds to share and grow together.",
-                  "Enhancing Skill Development – Covering diverse topics to help students sharpen their analytical and problem-solving skills."
+                  "Enhancing Skill Development – Covering diverse topics to help students sharpen their analytical and problem-solving skills.",
                 ].map((text, index) => (
                   <motion.li
                     key={index}
@@ -277,14 +284,16 @@ const AboutUs = () => {
               whileInView={{ x: 0, opacity: 1 }}
               transition={{ delay: 0.2 }}
             >
-              <h2 className="text-3xl font-bold mb-6 text-yellow-300">Our Vision</h2>
+              <h2 className="text-3xl font-bold mb-6 text-yellow-300">
+                Our Vision
+              </h2>
               <ul className="space-y-4">
                 {[
                   "Creating a Global Hub for Intellectual Growth – A place where students worldwide can challenge themselves.",
                   "Bridging Education and Entertainment – Making learning fun, interactive, and rewarding.",
                   "Fostering Leadership and Critical Thinking – Encouraging students to think strategically and make informed decisions.",
                   "Recognizing and Rewarding Talent – Ensuring that hard work and dedication get acknowledged through leaderboards, certificates, and prizes.",
-                  "Expanding Career Opportunities – Helping students develop skills that can be useful in academics and future careers."
+                  "Expanding Career Opportunities – Helping students develop skills that can be useful in academics and future careers.",
                 ].map((text, index) => (
                   <motion.li
                     key={index}
@@ -318,9 +327,21 @@ const AboutUs = () => {
           </motion.h2>
           <div className="grid md:grid-cols-3 gap-8">
             {[
-              { title: "1. Register & Explore", desc: "Sign up and discover a world of quizzes and challenges.", icon: "🔍" },
-              { title: "2. Compete & Win", desc: "Participate in quizzes, compete with peers, and earn rewards.", icon: "🏆" },
-              { title: "3. Cash Out & Level Up", desc: "Redeem your prizes and level up your skills!", icon: "⬆️" },
+              {
+                title: "1. Register & Explore",
+                desc: "Sign up and discover a world of quizzes and challenges.",
+                icon: "🔍",
+              },
+              {
+                title: "2. Compete & Win",
+                desc: "Participate in quizzes, compete with peers, and earn rewards.",
+                icon: "🏆",
+              },
+              {
+                title: "3. Cash Out & Level Up",
+                desc: "Redeem your prizes and level up your skills!",
+                icon: "⬆️",
+              },
             ].map((item, index) => (
               <motion.div
                 key={item.title}
@@ -358,7 +379,7 @@ const AboutUs = () => {
           viewport={{ once: true }}
           className="text-center py-16 bg-gradient-to-r from-purple-900 to-black rounded-2xl shadow-xl border border-purple-500/30 overflow-hidden relative"
         >
-          <motion.div
+          {/* <motion.div
             className="absolute inset-0 opacity-20"
             animate={{
               backgroundPosition: ["0% 0%", "100% 100%"],
@@ -368,18 +389,26 @@ const AboutUs = () => {
             style={{
               backgroundImage: "radial-gradient(circle, #9333ea 0%, transparent 60%)",
             }}
-          />
+          /> */}
           <motion.div
             initial={{ y: 20, opacity: 0 }}
             whileInView={{ y: 0, opacity: 1 }}
             transition={{ delay: 0.2 }}
           >
-            <h2 className="text-4xl font-bold text-yellow-300 mb-6">Join the Hunt Now!</h2>
-            <p className="text-xl text-purple-200 mb-8">Ready to compete? Sign up and start winning today!</p>
+            <h2 className="text-4xl font-bold text-yellow-300 mb-6">
+              Join the Hunt Now!
+            </h2>
+            <p className="text-xl text-purple-200 mb-8">
+              Ready to compete? Sign up and start winning today!
+            </p>
             <motion.button
-              whileHover={{ scale: 1.05, boxShadow: "0 0 20px rgba(147, 51, 234, 0.6)" }}
+              whileHover={{
+                scale: 1.05,
+                boxShadow: "0 0 20px rgba(147, 51, 234, 0.6)",
+              }}
               whileTap={{ scale: 0.95 }}
               className="bg-yellow-300 text-black px-8 py-3 rounded-lg font-bold shadow-lg hover:shadow-xl transition-all"
+              onClick={user ? () => navigate("/") : () => navigate("/get-in")}
             >
               Get Started
             </motion.button>
