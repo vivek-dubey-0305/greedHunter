@@ -35,6 +35,18 @@ const HeroSection = () => {
     Upcoming: [],
   });
 
+  
+  const randomCode = [
+    ...Array(Math.floor(Math.random() * (200 - 100 + 1)) + 100),
+  ]
+    .map(() =>
+      Math.random()
+        .toString(36)
+        .charAt(Math.floor(Math.random() * 10) + 2)
+        .toLowerCase()
+    )
+    .join("");
+
   // Handle mouse movement for parallax effect
   useEffect(() => {
     const handleMouseMove = (e) => {
@@ -234,7 +246,7 @@ const HeroSection = () => {
                 whileTap="tap"
                 onMouseEnter={() => setCursorHover(true)}
                 onMouseLeave={() => setCursorHover(false)}
-                onClick={() => navigate("/get-in")}
+                onClick={() => navigate(`/greed userform/hunter creation/${randomCode}`)}
               >
                 Join the Hunt
                 <ArrowRight className="w-5 h-5 transform group-hover:translate-x-1 transition-transform" />

@@ -1,4 +1,4 @@
-import React, { Suspense, lazy } from "react";
+import React, { Suspense, lazy, useEffect } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import { QuizProvider } from "./context/QuizContext";
 import { EventProvider } from "./context/EventContex";
@@ -24,8 +24,8 @@ const LeaderBoardPage = lazy(() => import("./pages/LeaderBoardPage"));
 const PageNotFound = lazy(() => import("./pages/PageNotFound"));
 const GreedHomePage = lazy(() => import("./pages/GreedHomePage"));
 const DashboardPage = lazy(() => import("./pages/DashBoard"));
-const TsendVerifyOtp = lazy(() => import("./pages/SendOtp"));
-const TverifyEmail = lazy(() => import("./pages/VerifyEmail"));
+const VerifyOtpCode = lazy(() => import("./pages/VerifyOtpCode"));
+// const TverifyEmail = lazy(() => import("./pages/VerifyEmail"));
 const TUpdateProfile = lazy(() => import("./pages/CompleteProfile"));
 const TAllEvents = lazy(() => import("./pages/AllEvents"));
 const TEventDetails = lazy(() => import("./pages/EventDetail"));
@@ -38,7 +38,66 @@ const CompleteProfile = lazy(() => import("./pages/CompleteProfile"));
 const App = () => {
   const { user } = useUserContext();
 
-  console.log("USer", user);
+  // console.log("USer", user);
+
+  useEffect(() => {
+    // Disable right-click
+    document.addEventListener("contextmenu", (event) => {
+      event.preventDefault();
+    });
+
+    // Disable DevTools shortcuts
+    const handleKeyDown = (event) => {
+      if (
+        event.ctrlKey &&
+        (event.key === "u" ||
+          event.key === "U" ||
+          event.key === "i" ||
+          event.key === "I" ||
+          event.key === "j" ||
+          event.key === "J" ||
+          event.key === "T" ||
+          event.key === "t" ||
+          event.key === "c" ||
+          event.key === "C" ||
+          event.key === "v")
+      ) {
+        event.preventDefault();
+      }
+
+      if (event.key === "F12") {
+        event.preventDefault();
+      }
+
+      if (
+        event.ctrlKey &&
+        event.shiftKey &&
+        (event.key === "I" ||
+          event.key === "i" ||
+          event.key === "C" ||
+          event.key === "c" ||
+          event.key === "V" ||
+          event.key === "v" ||
+          event.key === "J" ||
+          event.key === "j" ||
+          event.key === "t" ||
+          event.key === "T")
+      ) {
+        event.preventDefault();
+      }
+    };
+
+    // Attach event listeners
+    document.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      // Cleanup event listeners on component unmount
+      document.removeEventListener("contextmenu", (event) =>
+        event.preventDefault()
+      );
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, []);
 
   return (
     <>
@@ -60,8 +119,12 @@ const App = () => {
             <Route path="/dashboard" element={<Dashboard />} />
           </Route>
 
-          <Route path="/sotp" element={<TsendVerifyOtp />} />
-          <Route path="/votp" element={<TverifyEmail />} />
+          <Route
+            path={`/verify-mail/:randomCode`}
+            element={<VerifyOtpCode />}
+          />
+
+          {/* <Route path="/votp" element={<TverifyEmail />} /> */}
           <Route path="/completeProfile" element={<CompleteProfile />} />
 
           <Route path="/reset-password" element={<ResetPassword />} />
@@ -99,7 +162,10 @@ const App = () => {
           )}
 
           <Route path="/platform/faq" element={<FAQPage />} />
-          <Route path="/get-in" element={<UserForm />} />
+          <Route
+            path={`/greed userform/hunter creation/:randomCode`}
+            element={<UserForm />}
+          />
           <Route
             path="/greed-of-event/:category/:eventCategory/:subcategory/:eventId"
             element={<LandingPage />}

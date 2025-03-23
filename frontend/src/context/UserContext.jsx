@@ -106,14 +106,12 @@ export const UserProvider = ({ children }) => {
     }
   };
 
-  const sendOtp = async ({ email }) => {
+  const sendOtp = async () => {
     try {
       // console.log("fields userContext:\n", email);
-      const otpResponse = await apiUser.post("/sendOtp", {
-        email,
-      });
+      const otpResponse = await apiUser.get("/sendOtp");
 
-      // console.log("otpResponse userContext:\n", otpResponse.data);
+      console.log("otpResponse userContext:\n", otpResponse.data);
       return otpResponse.data;
     } catch (error) {
       console.error("Uc-OtE:\n", error);
@@ -151,7 +149,7 @@ export const UserProvider = ({ children }) => {
 
   const verifyOtp = async ({ email, otp }) => {
     try {
-      // console.log("fields userContext:\n", email, Number(otp), typeof otp);
+      console.log("fields userContext:\n", email, Number(otp));
       const verificationResponse = await apiUser.post("/verifyOtp", {
         email,
         otp,

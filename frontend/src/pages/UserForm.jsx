@@ -10,8 +10,9 @@ const UserForm = () => {
   const [showPopup, setShowPopup] = useState(false);
   const [errorField, setErrorField] = useState("");
   const [isForgetPassword, setIsForgetPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false)
   const navigate = useNavigate();
-  const { registerUser, loginUser } = useUserContext();
+  const { user, registerUser, loginUser } = useUserContext();
   const canvasRef = useRef(null);
 
   const [formData, setFormData] = useState({
@@ -161,6 +162,18 @@ const UserForm = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsLoading(true)
+
+    const randomCode = [
+      ...Array(Math.floor(Math.random() * (100 - 80 + 1)) + 80),
+    ]
+      .map(() =>
+        Math.random()
+          .toString(36)
+          .charAt(Math.floor(Math.random() * 10) + 2)
+          .toLowerCase()
+      )
+      .join("");
 
     try {
       const submitResponse = isLogin
@@ -177,10 +190,14 @@ const UserForm = () => {
           });
 
       toast.success(submitResponse.message);
-      isLogin ? navigate("/") : navigate("/sotp");
+
+      isLogin ? navigate("/") : navigate(`/verify-mail/${randomCode}`);
     } catch (err) {
       toast.error(err.message || "Something went wrong!");
       if (err?.duplicateField) setErrorField(err.duplicateField);
+    }
+    finally {
+      setIsLoading(false)
     }
   };
 
@@ -295,26 +312,35 @@ const UserForm = () => {
           />
 
           {isLogin && (
-            
-              <motion.span
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.5 }}
-                className="font-bold text-sm text-blue-500 hover:text-blue-700 cursor-pointer relative -right-70"
-                onClick={() => setShowPopup(!showPopup)}
-              >
-                Forgot password?
-              </motion.span>
-          
+            <motion.span
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.5 }}
+              className="font-bold text-sm text-blue-500 hover:text-blue-700 cursor-pointer relative -right-70"
+              onClick={() => setShowPopup(!showPopup)}
+            >
+              Forgot password?
+            </motion.span>
           )}
 
           <motion.button
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             type="submit"
-            className="mt-8 cursor-pointer w-full bg-blue-600 p-2 rounded-md text-white font-bold hover:bg-blue-700 transition-all"
+            disabled={isLoading}
+            className={`mt-8 cursor-pointer w-full p-2 rounded-md font-bold transition-all flex items-center justify-center gap-2 ${
+              isLoading
+                ? "bg-gray-500 cursor-not-allowed"
+                : "bg-blue-600 hover:bg-blue-700 text-white"
+            }`}
           >
-            {isLogin ? "Login" : "Sign Up"}
+            {isLoading ? (
+              <span className="animate-spin border-4 border-white border-t-transparent rounded-full w-6 h-6"></span>
+            ) : isLogin ? (
+              "Login"
+            ) : (
+              "Sign Up"
+            )}
           </motion.button>
         </form>
 

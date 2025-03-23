@@ -18,6 +18,15 @@ const Header = () => {
   const dropdownRef = useRef(null);
   const userDropdownRef = useRef(null);
 
+  const randomCode = [...Array(Math.floor(Math.random() * (100 - 80 + 1)) + 80)]
+    .map(() =>
+      Math.random()
+        .toString(36)
+        .charAt(Math.floor(Math.random() * 10) + 2)
+        .toLowerCase()
+    )
+    .join("");
+
   const navigate = useNavigate();
 
   const { user, setUser, isAuthenticated, logoutUser } = useUserContext();
@@ -124,7 +133,8 @@ const Header = () => {
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <Link to="/" className="text-xl font-bold">
-            <span className="text-purple-500">greed</span><span className="text-yellow-500">Hunter</span>
+            <span className="text-purple-500">greed</span>
+            <span className="text-yellow-500">Hunter</span>
           </Link>
 
           {/* Desktop Menu */}
@@ -257,7 +267,7 @@ const Header = () => {
                   <div className="absolute right-0 top-full mt-2 w-48 bg-white text-black rounded-lg shadow-xl overflow-hidden z-50">
                     {!isAuthenticated ? (
                       <Link
-                        to={`/sotp`}
+                        to={`/verify-mail/${randomCode}`}
                         className="block px-4 py-3 hover:bg-gray-100 transition-colors"
                       >
                         Verify
@@ -316,18 +326,28 @@ const Header = () => {
         >
           <div className="container mx-auto px-4 py-4">
             <div className="space-y-2">
-
-              <div  className="border-b border-gray-800 pb-2">
-
-            <Link to="/" onClick={() => setIsMenuOpen(false)} className="w-full flex justify-between items-center p-3 hover:bg-gray-800 rounded-lg">
-              Home
-            </Link>
-            <Link to="/platform/about us" onClick={() => setIsMenuOpen(false)} className="w-full flex justify-between items-center p-3 hover:bg-gray-800 rounded-lg">
-              About us
-            </Link>
-            <Link to="/platform/contact us" onClick={() => setIsMenuOpen(false)} className="w-full flex justify-between items-center p-3 hover:bg-gray-800 rounded-lg">
-              Contact Us
-            </Link>
+              <div className="border-b border-gray-800 pb-2">
+                <Link
+                  to="/"
+                  onClick={() => setIsMenuOpen(false)}
+                  className="w-full flex justify-between items-center p-3 hover:bg-gray-800 rounded-lg"
+                >
+                  Home
+                </Link>
+                <Link
+                  to="/platform/about us"
+                  onClick={() => setIsMenuOpen(false)}
+                  className="w-full flex justify-between items-center p-3 hover:bg-gray-800 rounded-lg"
+                >
+                  About us
+                </Link>
+                <Link
+                  to="/platform/contact us"
+                  onClick={() => setIsMenuOpen(false)}
+                  className="w-full flex justify-between items-center p-3 hover:bg-gray-800 rounded-lg"
+                >
+                  Contact Us
+                </Link>
               </div>
 
               <div className="pt-4 space-y-2">
@@ -336,7 +356,7 @@ const Header = () => {
                     {!isAuthenticated ? (
                       <Link
                         onClick={() => setIsMenuOpen(false)}
-                        to={`/sotp`}
+                        to={`/verify-mail/${randomCode}`}
                         className="block p-3 text-center hover:bg-gray-800 rounded-lg"
                       >
                         Verify
