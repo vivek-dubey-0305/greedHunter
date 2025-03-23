@@ -8,7 +8,7 @@ const router = express.Router();
 // *USER ROUTES____________________________________________________
 router.route("/register").post(register);
 router.route("/login").post(login);
-router.route("/sendOtp").post(snedOTP);
+router.route("/sendOtp").get(verifyJWT, snedOTP);
 router.route("/verifyOtp").post(verifyOTP);
 
 router.route("/reset-password-link").post(snedLink)

@@ -139,6 +139,27 @@ const register = asyncHandler(async (req, res, next) => {
         const refreshToken = await user.generateRefreshToken()
 
         user.refreshToken = refreshToken;
+
+
+        const OTP = await user.generateVerificationCode()
+        // await user.save()
+        // console.log("OTP: ", OTP)
+
+        try {
+
+            const message = generateEmailTemplate(OTP);
+            await sendEmail({
+                email,
+                subject: "YOUR VERIFICATION CODE",
+                message
+            })
+        } catch (error) {
+            // console.log("Email Error:\n", error)
+            return next(new ErrorHandler(`Unable to send email to ${email}\n Error ${error}`, 400))
+            // throw new ErrorHandler("Failed to send verification Code", 500)
+        }
+
+
         await user.save({ validateBeforeSave: false });
 
         const options = {
@@ -156,7 +177,7 @@ const register = asyncHandler(async (req, res, next) => {
             cookie("refreshToken", refreshToken, options).
             json({
                 success: true,
-                message: "User created Successfully",
+                message: `User created, OTP sent to ${email}`,
                 user: resUser, accessToken, refreshToken
             })
 
@@ -271,13 +292,14 @@ const logout = asyncHandler(async (req, res, next) => {
 })
 
 const snedOTP = asyncHandler(async (req, res, next) => {
-    const { email } = req.body;
-    if (!email) {
+    const userId = req.user._id;
+    console.log("USERID", userId)
+    if (!userId) {
         // console.error(" Email not provided")
-        return next(new ErrorHandler("Please provide the email to sned otp", 400))
+        return next(new ErrorHandler("The user is not registered, please try registering first", 400))
     }
-    const user = await User.findOne({ email })
-    if (!user) {
+    const user = await User.findById(userId)
+    if (!user?.email) {
         // console.error("Wrong Email")
         return next(new ErrorHandler("Please provide email used for account creation!"))
     }
@@ -287,6 +309,8 @@ const snedOTP = asyncHandler(async (req, res, next) => {
     await user.save()
 
     try {
+        console.log(user.email)
+        let email = user?.email
 
         const message = generateEmailTemplate(OTP);
         await sendEmail({
@@ -296,12 +320,12 @@ const snedOTP = asyncHandler(async (req, res, next) => {
         })
         return res.status(200).json({
             success: true,
-            message: `Email sent successfully to ${email}`
+            message: `Code sent successfully to ${email}`
         })
 
     } catch (error) {
-        // console.log("Email Error:\n", error)
-        return next(new ErrorHandler(`Unable to send email to ${email}\n Error ${error}`, 400))
+        console.log("Email Error:\n", error)
+        return next(new ErrorHandler(`Unable to send email to ${user.email}\n Error ${error}`, 400))
         // throw new ErrorHandler("Failed to send verification Code", 500)
     }
 })
@@ -390,7 +414,8 @@ const resetPassword = asyncHandler(async (req, res, next) => {
 
 const verifyOTP = asyncHandler(async (req, res, next) => {
     const { email, otp } = req.body;
-    // console.log("REQ otp", req.body)
+    console.log("REQ otp", email, otp)
+    console.log("REQ otp", { email, otp })
     if (!email) {
         // console.error("Email X (verify)")
         return next(new ErrorHandler("Enter the email to recive OTP", 400))
@@ -1552,7 +1577,7 @@ const sendMailTotopTen = asyncHandler(async (req, res, next) => {
 const userContactMail = asyncHandler(async (req, res, next) => {
     try {
         const { name, email, subject, message } = req.body;
-        console.log( { name, email, subject, message } )
+        console.log({ name, email, subject, message })
 
         if (!name || !email || !subject || !message) {
             return res.status(400).json({ success: false, message: "All fields are required!" });
