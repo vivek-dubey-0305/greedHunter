@@ -17,32 +17,33 @@ const adminUsage = asyncHandler(async (req, res, next) => {
 
     // console.log("Admin found", admin)
     // console.log(Boolean(admin))
-    let admin = await Admin.findOne({ adminName })
-    if (!admin) {
-        console.error("No admin Found ..creating One")
-        admin = await Admin.create({
-            adminName,
-            adminPassword
-        })
-
-        await admin.save()
-
-        console.log("Admin created and saved")
-
-        return res.status(201).json({
-            success: true,
-            message: "Admin Created",
-            admin: admin.adminName
-        })
-    }
-
+    // if (!admin) {
+        // console.error("No admin Found ..creating One")
+        // admin = await Admin.create({
+            //     adminName,
+            //     adminPassword
+            // })
+            
+            // await admin.save()
+            
+            // console.log("Admin created and saved")
+            
+            // return res.status(201).json({
+                //     success: true,
+                //     message: "Admin Created",
+                //     admin: admin.adminName
+                // })
+                //     return next(new ErrorHandler("You aren't a admin lil boy", 403))
+                // }
+                
     try {
-        let admin = await Admin.findOne({ adminName })
+        const admin = await Admin.findOne({ adminName })
+        // let admin = await Admin.findOne({ adminName })
         // console.log("adminName:", adminName)
         // console.log("admin.adminName:", admin.adminName)
         if (!admin) {
             // console.log("Name X")
-            return next(new ErrorHandler("Invalid credentials", 400))
+            return next(new ErrorHandler("You aren't a admin lil boy", 403))
         }
         const isPasswordValid = await admin.isPasswordCorrect(adminPassword);
 
@@ -213,9 +214,9 @@ const addBulkQuizQuestions = asyncHandler(async (req, res, next) => {
 
 
 const createEvent = asyncHandler(async (req, res, next) => {
-    const { 
-        title, description, eventType, category, subcategory, 
-        startTime, endTime, location, price, isFree, rules, rewardDetails, socialLinks 
+    const {
+        title, description, eventType, category, subcategory,
+        startTime, endTime, location, price, isFree, rules, rewardDetails, socialLinks
     } = req.body;
 
     if (!title || !description || !eventType || !category || !subcategory || !startTime || !endTime) {
@@ -272,7 +273,7 @@ const createEvent = asyncHandler(async (req, res, next) => {
 });
 
 
-  
+
 
 
 export {
