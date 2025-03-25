@@ -4,6 +4,7 @@ import { menuItems } from "../utils/data";
 import { ChevronDown, Menu, X, User, Share } from "lucide-react";
 import { useClickAway } from "react-use";
 import { useUserContext } from "../context/UserContext"; // Adjust the import path as needed
+import { randomUniqueCode } from "../utils/securedRoutes";
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -138,7 +139,7 @@ const Header = () => {
           </Link>
 
           {/* Desktop Menu */}
-          <div className="hidden lg:flex items-center space-x-4">
+          <div className="hidden lg:flex items-center space-x-7">
             <Link to="/" className="hover:text-gray-300 mr-7">
               Home
             </Link>
@@ -235,6 +236,12 @@ const Header = () => {
             <Link to="/platform/contact us" className="hover:text-gray-300">
               Contac Us
             </Link>
+            <Link
+              to={`/hunter/hunter dashboard/${randomUniqueCode + randomCode}`}
+              className="hover:text-gray-300"
+            >
+              For Hunters
+            </Link>
           </div>
 
           {/* Auth Buttons */}
@@ -267,7 +274,8 @@ const Header = () => {
                   <div className="absolute right-0 top-full mt-2 w-48 bg-white text-black rounded-lg shadow-xl overflow-hidden z-50">
                     {!isAuthenticated ? (
                       <Link
-                        to={`/verify-mail/${randomCode}`}
+                      onClick={() => setIsUserDropdownOpen(false)}
+                        to={`/hunter code verification/${randomCode}/${randomUniqueCode}`}
                         className="block px-4 py-3 hover:bg-gray-100 transition-colors"
                       >
                         Verify
@@ -277,6 +285,7 @@ const Header = () => {
                     )}
 
                     <Link
+                       onClick={() => setIsUserDropdownOpen(false)}
                       to={`/user/${user._id}/settings`}
                       className="block px-4 py-3 hover:bg-gray-100 transition-colors"
                     >
@@ -300,7 +309,7 @@ const Header = () => {
               </div>
             ) : (
               <Link
-                to={"/get-in"}
+                to={`/greed userform/hunter creation/${randomUniqueCode}`}
                 className="bg-blue-600 px-4 py-2 rounded-md hover:bg-blue-700 transition-colors"
               >
                 Register
@@ -348,6 +357,15 @@ const Header = () => {
                 >
                   Contact Us
                 </Link>
+                <Link
+                  to={`/hunter/hunter dashboard/${
+                    randomUniqueCode + randomCode
+                  }`}
+                  onClick={() => setIsMenuOpen(false)}
+                  className="w-full flex justify-between items-center p-3 hover:bg-gray-800 rounded-lg"
+                >
+                  For Hunters
+                </Link>
               </div>
 
               <div className="pt-4 space-y-2">
@@ -356,7 +374,7 @@ const Header = () => {
                     {!isAuthenticated ? (
                       <Link
                         onClick={() => setIsMenuOpen(false)}
-                        to={`/verify-mail/${randomCode}`}
+                        to={`/hunter code verification/${randomCode}/${randomUniqueCode}`}
                         className="block p-3 text-center hover:bg-gray-800 rounded-lg"
                       >
                         Verify
@@ -383,7 +401,7 @@ const Header = () => {
                   <>
                     <Link
                       onClick={() => setIsMenuOpen(false)}
-                      to="/get-in"
+                      to={`/greed userform/hunter creation/${randomUniqueCode}`}
                       className="block w-full p-3 bg-blue-600 hover:bg-blue-700 text-center rounded-lg transition-colors"
                     >
                       Register

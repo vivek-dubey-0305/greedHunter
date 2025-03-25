@@ -2,6 +2,7 @@ import { Navigate, Outlet } from "react-router-dom";
 import { useUserContext } from "../context/UserContext";
 import Loader from "./Loader";
 import toast from "react-hot-toast";
+import { randomUniqueCode } from "../utils/securedRoutes";
 
 const ProtectedRoute = () => {
   const { user, isAuthenticated, loading } = useUserContext();
@@ -14,7 +15,7 @@ const ProtectedRoute = () => {
   }
   if (!user) {
     toast.error("you haven't registered yet, register to continue");
-    return <Navigate to="/get-in" replace />;
+    return <Navigate to={`/greed userform/hunter creation/${randomUniqueCode}`} replace />;
   }
 
   // if (!isAuthenticated) {

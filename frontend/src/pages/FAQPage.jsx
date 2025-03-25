@@ -1,6 +1,7 @@
 import { greedHuntFAQ } from "../utils/data.js"; // Import FAQ data
 import React, { useState, useEffect } from "react";
 import { Search, ChevronDown, ChevronUp } from "lucide-react"; // Icons
+import Footer from "../components/Footer.jsx";
 
 // Sample data for testing - replace with your actual data import
 
@@ -47,6 +48,7 @@ const FAQPage = () => {
   };
 
   return (
+    <>
     <div className="min-h-screen bg-black text-white">
       <main className="container mx-auto px-6 py-12">
         <div className="text-center mb-12">
@@ -144,7 +146,9 @@ const FAQPage = () => {
           </div>
         </div>
       </main>
-    </div>
+      </div>
+      <Footer />
+      </>
   );
 };
 

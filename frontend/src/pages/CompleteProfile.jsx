@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useUserContext } from "../context/UserContext";
 import toast, { Toaster } from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
+import Footer from "../components/Footer";
 
 const CompleteProfile = () => {
   const { completeUserProfile, user, setUser } = useUserContext();
@@ -269,6 +270,8 @@ const CompleteProfile = () => {
           </form>
         </div>
       </div>
+      <Footer />
+
     </>
   );
 };

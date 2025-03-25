@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import toast, { Toaster } from "react-hot-toast";
+import { randomCode, randomUniqueCode } from "../utils/securedRoutes";
+import Footer from "../components/Footer";
 
 const ResetPassword = () => {
   const navigate = useNavigate();
@@ -33,7 +35,7 @@ const ResetPassword = () => {
       );
       toast.success("HURRAY");
       setSuccess(res.data.message);
-      setTimeout(() => navigate("/get-in"), 3000); // Redirect after success
+      setTimeout(() =>  navigate(`/greed userform/hunter creation/${randomUniqueCode}`), 1500); // Redirect after success
     } catch (err) {
       setError(err.response?.data?.message || "Something went wrong");
     }
@@ -81,6 +83,8 @@ const ResetPassword = () => {
           </button>
         </form>
       </div>
+      <Footer />
+  
     </>
   );
 };

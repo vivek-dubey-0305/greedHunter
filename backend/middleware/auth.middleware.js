@@ -42,6 +42,11 @@ export const verifyJWT = asyncHandler(async (req, res, next) => {
 
             req.user = user;
             // console.log("req.user: (29)", req.user)
+
+            // **Attach `exp` (expiry time) to response headers**
+            // res.locals.tokenExp = decodedTokenInformation.exp; // Store expiry timestamp
+
+
             next();
         } catch (error) {
             return next(new ErrorHandler("Invalid AccessToken!!, token expired", 401))

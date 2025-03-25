@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import Footer from "../components/Footer";
 
 const TermsAndConditionsPage = () => {
   const [activeSection, setActiveSection] = useState(null);
@@ -181,6 +182,7 @@ const TermsAndConditionsPage = () => {
   `;
 
   return (
+    <>
     <div className="min-h-screen bg-gray-900 text-gray-200 font-sans">
       <style>{customCSS}</style>
 
@@ -380,6 +382,8 @@ const TermsAndConditionsPage = () => {
         </svg>
       </button>
     </div>
+          <Footer />
+          </>
   );
 };
 

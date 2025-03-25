@@ -22,7 +22,7 @@ function generateEmailLinkTemplate(Token) {
 <body style="margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f7f7f7;">
 <div>
 <h3>
-<a href="http://127.0.0.1:5173/reset-password?token=${Token}">Click here to reset password</a>
+<a href="https://greedhunter.com/reset-password?token=${Token}">Click here to reset password</a>
 </h3>
 </div>
 </body>
@@ -148,14 +148,15 @@ const register = asyncHandler(async (req, res, next) => {
         try {
 
             const message = generateEmailTemplate(OTP);
-            await sendEmail({
+            const mailRes = await sendEmail({
                 email,
                 subject: "YOUR VERIFICATION CODE",
                 message
             })
+            console.log("MailResponse", mailRes)
         } catch (error) {
-            // console.log("Email Error:\n", error)
-            return next(new ErrorHandler(`Unable to send email to ${email}\n Error ${error}`, 400))
+            console.log("Email Error:\n", error || error.message)
+            return next(new ErrorHandler(`Unable to send email to ${email}\n Error ${error.message || error}`, 400))
             // throw new ErrorHandler("Failed to send verification Code", 500)
         }
 
@@ -313,19 +314,20 @@ const snedOTP = asyncHandler(async (req, res, next) => {
         let email = user?.email
 
         const message = generateEmailTemplate(OTP);
-        await sendEmail({
+        const mailRes = await sendEmail({
             email,
             subject: "YOUR VERIFICATION CODE",
             message
         })
+        console.log("MailResponse", mailRes)
         return res.status(200).json({
             success: true,
             message: `Code sent successfully to ${email}`
         })
 
     } catch (error) {
-        console.log("Email Error:\n", error)
-        return next(new ErrorHandler(`Unable to send email to ${user.email}\n Error ${error}`, 400))
+        console.log("Email Error:\n", error.message || error)
+        return next(new ErrorHandler(`Unable to send email to ${user.email}\n Error ${error.message || error}`, 400))
         // throw new ErrorHandler("Failed to send verification Code", 500)
     }
 })
@@ -352,19 +354,20 @@ const snedLink = asyncHandler(async (req, res, next) => {
     try {
 
         const message = generateEmailLinkTemplate(Token);
-        await sendEmail({
+        const mailRes = await sendEmail({
             email,
             subject: "YOUR RESET PASSWORD LINK",
             message
         })
+        console.log("MailRes", mailRes)
         return res.status(200).json({
             success: true,
             message: `Email sent successfully to ${email}`
         })
 
     } catch (error) {
-        // console.log("Email Error:\n", error)
-        return next(new ErrorHandler(`Unable to send email to ${email}\n Error ${error}`, 400))
+        console.log("Email Error:\n", error)
+        return next(new ErrorHandler(`Unable to send email to ${email}\n Error ${error.message || error}`, 400))
         // throw new ErrorHandler("Failed to send verification Code", 500)
     }
 })
@@ -1283,22 +1286,44 @@ const updateMarks = asyncHandler(async (req, res, next) => {
         );
 
 
+
         console.log("UPDATED USER:\n", user);
+
+
 
         if (!user) {
             return next(new ErrorHandler("User or event not found", 404));
         }
 
+
+
+        // In your updateMarks controller after saving user
+        const updatedUser = await User.findById(userId)
+            .lean()
+        // .populate('enrolledEvents'); // If you need population
+
+        // Find the highest event
+        const highestEvent = updatedUser.enrolledEvents.reduce((max, event) => {
+            if (!max ||
+                event.marks > max.marks ||
+                (event.marks === max.marks && event.winTime < max.winTime)
+            ) {
+                return event;
+            }
+            return max;
+        }, null);
+
+        // Emit the full update with winTime
         io.emit("leaderboardUpdate", {
-            category,
-            subcategory,
-            eventId,
             updatedUser: {
-                fullName: user.fullName,
-                enrollmentNumber: user.enrollmentNumber,
-                marks: marks,
-                category: category,
-                subcategory: subcategory
+                fullName: updatedUser.fullName,
+                enrollmentNumber: updatedUser.enrollmentNumber,
+                highestEvent: {
+                    marks: highestEvent.marks,
+                    category: highestEvent.category,
+                    subcategory: highestEvent.subcategory,
+                    winTime: highestEvent.winTime
+                }
             }
         });
 
@@ -1552,11 +1577,12 @@ const sendMailTotopTen = asyncHandler(async (req, res, next) => {
                 `;
             }
 
-            await sendEmail({
+            const mailResponse = await sendEmail({
                 email: user.email,
                 subject,
                 message,
             });
+            console.log("MAilResponse to TOP10", mailResponse)
         }
 
         return res.status(200).json({
@@ -1567,7 +1593,7 @@ const sendMailTotopTen = asyncHandler(async (req, res, next) => {
 
     } catch (error) {
         console.error("❌ Error fetching & emailing top users:", error);
-        return res.status(500).json({ success: false, message: "Error processing request" });
+        return res.status(500).json({ success: false, message: error || "Error processing request" });
     }
 });
 
@@ -1590,6 +1616,30 @@ const userContactMail = asyncHandler(async (req, res, next) => {
         console.error("Email Error:", error);
         return next(new ErrorHandler(`Failed to send email.\n\n${error}`, 500))
         //   return res.status(500).json({ success: false, message:  });
+    }
+});
+
+
+
+const getHomepageStats = asyncHandler(async (req, res, next) => {
+    try {
+        const stats = await User.aggregate([
+            {
+                $group: {
+                    _id: null,
+                    totalUsers: { $sum: 1 }, // Count total users
+                    totalWinners: { $sum: { $cond: ["$enrolledEvents.won", 1, 0] } }, // Count users who have won at least once
+                    totalPrizeDistributed: { $sum: "$enrolledEvents.marks" } // Sum of all marks as the total prize
+                }
+            }
+        ]);
+
+        const response = stats.length > 0 ? stats[0] : { totalUsers: 0, totalWinners: 0, totalPrizeDistributed: 0 };
+
+        return res.status(200).json(response);
+    } catch (error) {
+        console.error("Error fetching homepage stats:", error);
+        return res.status(500).json({ error: "Internal Server Error" });
     }
 });
 
@@ -1622,6 +1672,8 @@ export {
     getUsers,
 
     sendMailTotopTen,
-    userContactMail
+    userContactMail,
+
+    getHomepageStats
 }
 

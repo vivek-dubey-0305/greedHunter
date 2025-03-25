@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 // import { getEvents } from "../context/EventContext";
 import { useEventContext } from "../context/EventContex";
+import Footer from "../components/Footer";
 
 const TAllEvents = () => {
   const [events, setEvents] = useState([]);
@@ -22,6 +23,7 @@ const TAllEvents = () => {
   }, []);
 
   return (
+    <>
     <div className="min-h-screen bg-gray-900 text-white p-6">
       <h1 className="text-3xl font-bold text-center text-yellow-400 mb-6">
         All Events
@@ -61,6 +63,8 @@ const TAllEvents = () => {
         <p className="text-center text-gray-400">No events found</p>
       )}
     </div>
+          <Footer />
+          </>
   );
 };
 

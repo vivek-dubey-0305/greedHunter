@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import Footer from "../components/Footer";
 
 const PrivacyPolicyPage = () => {
   const [expandedSection, setExpandedSection] = useState(null);
@@ -346,6 +347,7 @@ const PrivacyPolicyPage = () => {
   ];
 
   return (
+    <>
     <div className="min-h-screen bg-gray-900 text-gray-200 pb-16">
       {/* Main Content */}
       <main className="container mx-auto px-4 py-10">
@@ -399,6 +401,8 @@ const PrivacyPolicyPage = () => {
         </div>
       </main>
     </div>
+          <Footer />
+          </>
   );
 };
 

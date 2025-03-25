@@ -820,11 +820,12 @@
 
 import React, { useState, useEffect } from "react";
 import { useUserContext } from "../context/UserContext";
-import { Crown, Sparkles } from "lucide-react";
+import { Crown, Sparkles, Download } from "lucide-react";
 import Footer from "../components/Footer";
 import Loader from "../components/Loader"; // Import Loader component
 
 import { io } from "socket.io-client";
+import { useParams } from "react-router-dom";
 
 const socket = io("http://localhost:8000", { transports: ["websocket"] });
 
@@ -832,61 +833,101 @@ const LeaderBoardPage = () => {
   const { user, getUsers } = useUserContext();
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(false); // Loader state
+  const { category, subcategory } = useParams();
+
+  const [searchQuery, setSearchQuery] = useState("");
+
   // const [refreshedClick, setRefreshedClick] = useState(false);
 
+  const formatTime = (seconds) => {
+    const minutes = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${minutes}:${secs < 10 ? "0" : ""}${secs}`;
+  };
+
+
+  // Add this function for CSV download
+  const downloadCSV = () => {
+    const filteredUsers = filterUsers(users);
+    const csvContent = [
+      ["Rank", "Name", "Enrollment No.", "Marks", "Time"],
+      ...filteredUsers.map((user, index) => [
+        index + 1,
+        user?.fullName,
+        user?.enrollmentNumber || user?.rollNumber,
+        user?.highestEvent?.marks || 0,
+        `${formatTime(user?.highestEvent?.winTime)}s`,
+      ]),
+    ]
+      .map((row) => row.join(","))
+      .join("\n");
+
+    const blob = new Blob([csvContent], { type: "text/csv" });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "leaderboard.csv";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    window.URL.revokeObjectURL(url);
+  };
+
+  // Add search filter function
+  const filterUsers = (users) => {
+    return users.filter((user) => {
+      const searchLower = searchQuery.toLowerCase();
+      return (
+        user.fullName.toLowerCase().includes(searchLower) ||
+        user.enrollmentNumber?.toLowerCase().includes(searchLower) ||
+        user.rollNumber?.toLowerCase().includes(searchLower)
+      );
+    });
+  };
+
   useEffect(() => {
-    handleGetUsers(); // Initial fetch on component mount
+    handleGetUsers();
 
-    // Listen for real-time leaderboard updates from the backend
-    socket.on("leaderboardUpdate", (data) => {
-      console.log("🔄 Live Leaderboard Update Received:", data);
-
-      // Update the leaderboard state without affecting the loader
+    // Socket listener setup
+    const handleLeaderboardUpdate = (data) => {
       setUsers((prevUsers) => {
         const updatedUsers = [...prevUsers];
-
-        // Check if the user already exists
         const existingUserIndex = updatedUsers.findIndex(
           (usr) => usr.enrollmentNumber === data.updatedUser.enrollmentNumber
         );
 
         if (existingUserIndex !== -1) {
-          // Update existing user marks
+          // Full replacement of highest event
           updatedUsers[existingUserIndex] = {
             ...updatedUsers[existingUserIndex],
-            highestEvent: {
-              ...updatedUsers[existingUserIndex].highestEvent,
-              marks: data.updatedUser.marks,
-            },
+            highestEvent: data.updatedUser.highestEvent,
           };
         } else {
-          // Add new user to leaderboard
           updatedUsers.push({
             fullName: data.updatedUser.fullName,
             enrollmentNumber: data.updatedUser.enrollmentNumber,
-            highestEvent: {
-              marks: data.updatedUser.marks,
-              category: data.updatedUser.category,
-              subcategory: data.updatedUser.subcategory,
-              winTime: data.updatedUser.winTime,
-            },
+            highestEvent: data.updatedUser.highestEvent,
           });
         }
 
-        // Sort by highest marks
-        return updatedUsers.sort(
-          (a, b) =>
-            (b.highestEvent.marks || 0) - (a.highestEvent.marks || 0) &&
-            (b.highestEvent.winTime || 0) - (a.highestEvent.winTime || 0)
-        );
-      });
-    });
+        // Proper sorting logic
+        return updatedUsers.sort((a, b) => {
+          const bMarks = b.highestEvent?.marks || 0;
+          const aMarks = a.highestEvent?.marks || 0;
+          const bTime = b.highestEvent?.winTime || Infinity;
+          const aTime = a.highestEvent?.winTime || Infinity;
 
-    // Cleanup listener when component unmounts
-    return () => {
-      socket.off("leaderboardUpdate");
+          return bMarks - aMarks || aTime - bTime;
+        });
+      });
     };
-  }, []);
+
+    socket.on("leaderboardUpdate", handleLeaderboardUpdate);
+
+    return () => {
+      socket.off("leaderboardUpdate", handleLeaderboardUpdate);
+    };
+  }, []); // Remove all dependencies - socket listener doesn't need them
 
   const handleGetUsers = async () => {
     // console.log(refreshedClick)
@@ -915,9 +956,33 @@ const LeaderBoardPage = () => {
   return (
     <>
       <div className="min-h-screen bg-gradient-to-r from-gray-900 to-gray-700 flex flex-col items-center py-10">
-        <h1 className="text-4xl font-bold text-white mb-6 flex items-center gap-2 animate-bounce">
-          🏆 Leaderboard
-        </h1>
+        <div className="w-full max-w-6xl px-4 mb-6">
+          <div className="flex flex-col md:flex-row justify-between items-center gap-4 mb-6">
+            <h1 className="text-4xl font-bold text-white flex items-center gap-2 animate-bounce">
+              🏆 Leaderboard
+            </h1>
+            <div className="flex gap-4 w-full md:w-auto">
+              <input
+                type="text"
+                placeholder="Search by name or number..."
+                className="w-full md:w-64 px-4 py-2 rounded-lg bg-gray-800 text-white border border-purple-500 focus:outline-none focus:ring-2 focus:ring-yellow-400"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
+              <button
+                onClick={downloadCSV}
+                className="px-4 py-2 bg-gradient-to-r from-purple-600 to-yellow-500 rounded-lg flex items-center gap-2 hover:from-yellow-500 hover:to-purple-600 transition-all"
+              >
+                <Download size={20} />
+                <span className="hidden md:inline">Download CSV</span>
+              </button>
+            </div>
+          </div>
+
+          <h1 className="text-2xl font-bold text-white mb-6 text-center animate-pulse">
+            {subcategory} {category}
+          </h1>
+        </div>
 
         {loading ? ( // Show loader while fetching data
           <Loader />
@@ -929,100 +994,105 @@ const LeaderBoardPage = () => {
                   <th className="py-3 px-5">Rank</th>
                   <th className="py-3 px-5">Name</th>
                   <th className="py-3 px-5">Enrollment No.</th>
-                  <th className="py-3 px-5">Category</th>
-                  <th className="py-3 px-5">Subcategory</th>
+                  {/* <th className="py-3 px-5">Category</th>
+                  <th className="py-3 px-5">Subcategory</th> */}
                   <th className="py-3 px-5">Marks</th>
+                  <th className="py-3 px-5">Time</th>
                 </tr>
               </thead>
               <tbody>
                 {users.length > 0 ? (
-                  users
+                    
+                      filterUsers(users)
                     .map((usr) => ({
-                      ...usr,
-                      highestEvent:
-                        usr.enrolledEvents?.reduce(
-                          (max, event) =>
-                            event.marks > (max?.marks || 0) ||
-                            (event.marks === max?.marks &&
-                              event.winTime < max?.winTime) // ✅ Sort by marks, then winTime
-                              ? event
-                              : max,
-                          {}
-                        ) || {},
-                    }))
-                    .filter((usr) => usr.highestEvent.marks !== undefined) // Remove users without marks
-                    .sort((a, b) => {
-                      if (
-                        (b.highestEvent.marks || 0) !==
-                        (a.highestEvent.marks || 0)
-                      ) {
-                        return (
-                          (b.highestEvent.marks || 0) -
-                          (a.highestEvent.marks || 0)
-                        ); // Highest marks first
-                      } else {
-                        return (
-                          (a.highestEvent.winTime || Infinity) -
-                          (b.highestEvent.winTime || Infinity)
-                        ); // Least time wins
-                      }
-                    })
-                    .map((usr, index) => (
-                      <tr
-                        key={usr._id}
-                        className={`border-b ${
-                          user?._id === usr._id
-                            ? "bg-yellow-200"
-                            : "bg-blue-700 text-white"
-                        } hover:bg-blue-500 transition-all duration-300 ${
-                          index === 0
-                            ? "bg-purple-700 text-white font-bold text-lg hover:bg-purple-400"
-                            : index === 1
-                            ? "bg-purple-600 text-white font-semibold hover:bg-purple-400"
-                            : index === 2
-                            ? "bg-purple-500 text-white font-medium hover:bg-purple-400"
-                            : ""
-                        }`}
-                      >
-                        <td className="py-3 px-5 flex items-center gap-2">
-                          {index === 0 && (
-                            <Crown
-                              className="text-yellow-300 animate-pulse"
-                              size={20}
-                            />
-                          )}
-                          {index === 1 && (
-                            <Sparkles
-                              className="text-yellow-300 animate-pulse"
-                              size={20}
-                            />
-                          )}
-                          {index === 2 && (
-                            <Sparkles
-                              className="text-yellow-300 animate-pulse"
-                              size={20}
-                            />
-                          )}
-                          {index + 1}
+                        ...usr,
+                        highestEvent:
+                          usr?.enrolledEvents?.reduce(
+                            (max, event) =>
+                              event.marks > (max?.marks || 0) ||
+                                (event.marks === max?.marks &&
+                                  event.winTime < max?.winTime) // ✅ Sort by marks, then winTime
+                                ? event
+                                : max,
+                            {}
+                          ) || {},
+                      }))
+                    
+                        .filter((usr) => usr.highestEvent.marks !== undefined) // Remove users without marks
+                        .sort((a, b) => {
+                          if (
+                            (b.highestEvent?.marks || 0) !==
+                            (a.highestEvent?.marks || 0)
+                          ) {
+                            return (
+                              (b.highestEvent?.marks || 0) -
+                              (a.highestEvent?.marks || 0)
+                            ); // Highest marks first
+                          } else {
+                            return (
+                              (a.highestEvent?.winTime || Infinity) -
+                              (b.highestEvent?.winTime || Infinity)
+                            ); // Least time wins
+                          }
+                        })
+                    
+                        .map((usr, index) => (
+                          <tr
+                            key={usr?._id}
+                            className={`border-b ${user?._id === usr?._id
+                              ? "bg-yellow-200"
+                              : "bg-blue-700 text-white"
+                              } hover:bg-blue-500 transition-all duration-300 ${index === 0
+                                ? "bg-purple-700 text-white font-bold text-lg hover:bg-purple-400"
+                                : index === 1
+                                  ? "bg-purple-600 text-white font-semibold hover:bg-purple-400"
+                                  : index === 2
+                                    ? "bg-purple-500 text-white font-medium hover:bg-purple-400"
+                                    : ""
+                              }`}
+                          >
+                            <td className="py-3 px-5 flex items-center gap-2">
+                              {index === 0 && (
+                                <Crown
+                                  className="text-yellow-300 animate-pulse"
+                                  size={20}
+                                />
+                              )}
+                              {index === 1 && (
+                                <Sparkles
+                                  className="text-yellow-300 animate-pulse"
+                                  size={20}
+                                />
+                              )}
+                              {index === 2 && (
+                                <Sparkles
+                                  className="text-yellow-300 animate-pulse"
+                                  size={20}
+                                />
+                              )}
+                              {index + 1}
+                            </td>
+                            <td className="py-3 px-5 font-semibold">
+                              {usr?.fullName}
+                            </td>
+                            <td className="py-3 px-5">
+                              {usr?.enrollmentNumber || usr?.rollNumber}
+                            </td>
+                            {/* <td className="py-3 px-5 font-semibold">
+                          {usr?.highestEvent?.category || "N/A"}
                         </td>
                         <td className="py-3 px-5 font-semibold">
-                          {usr?.fullName}
-                        </td>
-                        <td className="py-3 px-5">
-                          {usr.enrollmentNumber || usr.rollNumber}
-                        </td>
-                        <td className="py-3 px-5 font-semibold">
-                          {usr.highestEvent.category || "N/A"}
-                        </td>
-                        <td className="py-3 px-5 font-semibold">
-                          {usr.highestEvent.subcategory || "N/A"}
-                        </td>
-                        <td className="py-3 px-5 font-bold text-white">
-                          {usr.highestEvent.marks || 0}
-                        </td>
-                      </tr>
+                          {usr?.highestEvent?.subcategory || "N/A"}
+                        </td> */}
+                            <td className="py-3 px-5 font-bold text-white">
+                              {usr?.highestEvent.marks || 0}
+                            </td>
+                            <td className="py-3 px-5 font-bold text-white">
+                              {formatTime(usr?.highestEvent?.winTime)}s
+                            </td>
+                          </tr>
                     ))
-                ) : (
+                    ) : (
                   <tr>
                     <td colSpan="6" className="py-4 text-center text-gray-500">
                       No users found.

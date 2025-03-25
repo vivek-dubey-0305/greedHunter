@@ -1,10 +1,12 @@
 import React, { useState } from "react";
 import { useUserContext } from "../context/UserContext";
 import { toast, Toaster } from "react-hot-toast";
-import { Pencil, X, Key, Trash2, User } from "lucide-react";
+import { Pencil, X, Key, Trash2, User, ArrowLeft } from "lucide-react";
 import ForgetPasswordPopup from "../components/ForgetPasswordPopup";
+import { motion } from "framer-motion";
 
 import { useNavigate } from "react-router-dom";
+import Footer from "../components/Footer";
 
 const UserSettings = () => {
   const { user, setUser, updateProfile, changePassword, deleteAccount } =
@@ -109,10 +111,25 @@ const UserSettings = () => {
   };
 
   return (
+    <>
     <div className="min-h-screen bg-gray-900 text-gray-100 flex">
       <Toaster />
+      
       {/* Sidebar Navigation */}
+
       <div className="w-64 bg-black p-6 space-y-4 border-r border-purple-500">
+      <motion.button
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.5 }}
+                  className="bg-gradient-to-l from-black via-fuchsia-500 to-purple-500 opacity-50 rounded-2xl flex items-center space-x-2 text-white hover:text-fuchsia-200 font-bold mb-6 transition-colors cursor-pointer pointer-events-auto z-10"
+                  onClick={() => {
+                    navigate(-1); // Use a direct route for testing
+                  }}
+                >
+                  <ArrowLeft className="w-7 h-7" />
+                  {/* <span>Back to Events</span> */}
+                </motion.button>
         <button
           onClick={() => setActiveTab("profile")}
           className={`w-full flex items-center space-x-3 p-3 rounded-lg ${
@@ -307,6 +324,8 @@ const UserSettings = () => {
         )}
       </div>
     </div>
+          <Footer />
+          </>
   );
 };
 

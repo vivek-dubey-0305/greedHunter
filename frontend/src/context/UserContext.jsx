@@ -7,7 +7,7 @@ const UserContext = createContext();
 export const useUserContext = () => useContext(UserContext);
 
 export const UserProvider = ({ children }) => {
-  const [isRegistered, setIsRegistered] = useState(false);
+
   const [user, setUser] = useState(null);
   //   const [user, setUser] = useState({
   //     // Add initial empty Map structure
@@ -417,13 +417,10 @@ export const UserProvider = ({ children }) => {
         deleteAccount,
 
         updateMarks,
-        isRegistered,
         user,
         setUser,
         isAuthenticated,
         loading,
-
-        setIsRegistered,
         sendTopUserEmails,
         sendMailToHunter,
 

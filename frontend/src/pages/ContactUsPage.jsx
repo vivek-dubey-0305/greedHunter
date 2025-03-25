@@ -3,6 +3,7 @@ import { useInView } from "react-intersection-observer";
 import { useEffect, useState } from "react";
 import { useUserContext } from "../context/UserContext";
 import { Loader2 } from "lucide-react";
+import Footer from "../components/Footer";
 
 const ContactUs = () => {
   const controls = useAnimation();
@@ -93,6 +94,7 @@ const ContactUs = () => {
   };
 
   return (
+    <>
     <div className="relative min-h-screen overflow-hidden bg-black text-white">
       {/* Animated background orbs */}
       {orbs.map((orb) => (
@@ -519,7 +521,9 @@ const ContactUs = () => {
           </motion.div>
         </motion.section>
       </div>
-    </div>
+      </div>
+            <Footer />
+            </>
   );
 };
 

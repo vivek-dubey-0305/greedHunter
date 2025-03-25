@@ -1,10 +1,12 @@
 import { Ghost, ArrowRight, Sparkles, Palette } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import Footer from "../components/Footer";
 
 const PageNotFound = () => {
   const navigate = useNavigate();
 
   return (
+    <>
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900 relative overflow-hidden">
       {/* Floating Particles */}
       <div className="absolute inset-0 overflow-hidden">
@@ -96,6 +98,8 @@ const PageNotFound = () => {
         `}
       </style>
     </div>
+          <Footer />
+          </>
   );
 };
 

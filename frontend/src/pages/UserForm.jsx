@@ -4,6 +4,10 @@ import toast, { Toaster } from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import ForgetPasswordPopup from "../components/ForgetPasswordPopup";
+import { randomCode, randomUniqueCode } from "../utils/securedRoutes";
+import { Eye } from "lucide-react";
+import PasswordInput from "../components/PasswordInput";
+import Footer from "../components/Footer";
 
 const UserForm = () => {
   const [isLogin, setIsLogin] = useState(true);
@@ -164,16 +168,16 @@ const UserForm = () => {
     e.preventDefault();
     setIsLoading(true)
 
-    const randomCode = [
-      ...Array(Math.floor(Math.random() * (100 - 80 + 1)) + 80),
-    ]
-      .map(() =>
-        Math.random()
-          .toString(36)
-          .charAt(Math.floor(Math.random() * 10) + 2)
-          .toLowerCase()
-      )
-      .join("");
+    // const randomCode = [
+    //   ...Array(Math.floor(Math.random() * (100 - 80 + 1)) + 80),
+    // ]
+    //   .map(() =>
+    //     Math.random()
+    //       .toString(36)
+    //       .charAt(Math.floor(Math.random() * 10) + 2)
+    //       .toLowerCase()
+    //   )
+    //   .join("");
 
     try {
       const submitResponse = isLogin
@@ -191,7 +195,7 @@ const UserForm = () => {
 
       toast.success(submitResponse.message);
 
-      isLogin ? navigate("/") : navigate(`/verify-mail/${randomCode}`);
+      isLogin ? navigate(`/hunter/hunter dashboard/${randomUniqueCode + randomCode}`) : navigate(`/hunter code verification/${randomCode}/${randomUniqueCode}`);
     } catch (err) {
       toast.error(err.message || "Something went wrong!");
       if (err?.duplicateField) setErrorField(err.duplicateField);
@@ -203,6 +207,7 @@ const UserForm = () => {
 
   // bg-gradient-to-r from-purple-900 via-black to-purple-900 bg-[length:400%_400%]
   return (
+    <>
     <div className="min-h-screen flex items-center justify-center px-4 relative bg-black">
       <canvas
         ref={canvasRef}
@@ -224,6 +229,7 @@ const UserForm = () => {
         <form onSubmit={handleSubmit} className="space-y-4">
           {!isLogin && (
             <>
+              
               <motion.input
                 initial={{ opacity: 0, x: -30 }}
                 animate={{ opacity: 1, x: 0 }}
@@ -298,28 +304,20 @@ const UserForm = () => {
               />
             </>
           )}
+          
 
-          <motion.input
-            initial={{ opacity: 0, x: 30 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.5 }}
-            className="w-full p-2 bg-gradient-to-br from-gray-700 to-gray-950 text-white border-b-4 border-yellow-500 rounded-md focus:outline-none"
-            type="password"
-            name="password"
-            placeholder="Password"
-            value={formData.password}
-            onChange={handleChange}
-          />
+<PasswordInput formData={formData} handleChange={handleChange} />
+
 
           {isLogin && (
             <motion.span
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.5 }}
-              className="font-bold text-sm text-blue-500 hover:text-blue-700 cursor-pointer relative -right-70"
+              className="font-bold text-sm text-blue-500 hover:text-blue-700 cursor-pointer relative flex justify-end"
               onClick={() => setShowPopup(!showPopup)}
             >
-              Forgot password?
+              Forgot password ?
             </motion.span>
           )}
 
@@ -364,6 +362,8 @@ const UserForm = () => {
         </motion.p>
       </motion.div>
     </div>
+          <Footer />
+          </>
   );
 };
 

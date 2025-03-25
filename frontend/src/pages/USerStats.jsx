@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import { BarChart, XAxis, YAxis, Tooltip, Bar, ResponsiveContainer } from "recharts";
 import { Link } from "react-router-dom";
 import { apiLeaderboard } from "../services/api";
+import Footer from "../components/Footer";
 
 const UserStats = () => {
   const [overallRank, setOverallRank] = useState(null);
@@ -42,6 +43,7 @@ const UserStats = () => {
   };
 
   return (
+    <>
     <div className="flex min-h-screen bg-black text-white">
       {/* Sidebar Navigation */}
       <aside className="w-64 bg-gray-900 p-5">
@@ -119,7 +121,9 @@ const UserStats = () => {
           ))}
         </div>
       </main>
-    </div>
+      </div>
+      <Footer />
+      </>
   );
 };
 

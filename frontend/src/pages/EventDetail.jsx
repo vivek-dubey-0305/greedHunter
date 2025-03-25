@@ -16,8 +16,10 @@ import {
   AlertTriangle,
   ArrowLeft,
 } from "lucide-react";
+import { randomCode, randomUniqueCode } from "../utils/securedRoutes";
+import Footer from "../components/Footer";
 
-const TEventDetails = () => {
+const EventDetail = () => {
   const { category, subcategory, eventId } = useParams();
   const { user, setUser } = useUserContext();
   const { getEvent } = useEventContext();
@@ -69,13 +71,13 @@ const TEventDetails = () => {
   // Handle enrollment
   const handleEnroll = async () => {
     if (!user) {
-      navigate("/get-in");
+      navigate(`/greed userform/hunter creation/${randomUniqueCode}`);
       return;
     }
 
     if (!user.isVerified) {
       toast.error("Verify your email to continue");
-      navigate("/sotp");
+      navigate(`/hunter code verification/${randomCode}/${randomUniqueCode}`);
       return;
     }
 
@@ -131,14 +133,6 @@ const TEventDetails = () => {
   };
 
   // Handle back navigation
-  const handleBack = () => {
-    console.log("clicked");
-    if (window.history.length > 1) {
-      navigate(-1);
-    } else {
-      navigate("/events");
-    }
-  };
 
   // Loading screen
   if (loading) {
@@ -166,7 +160,7 @@ const TEventDetails = () => {
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.5 }}
           className="flex items-center space-x-2 text-gray-400 hover:text-white mt-6 transition-colors cursor-pointer"
-          onClick={handleBack}
+          onClick={() => {navigate(-1)}}
         >
           <ArrowLeft className="w-4 h-4" />
           <span>Back to Events</span>
@@ -196,7 +190,7 @@ const TEventDetails = () => {
         className="min-h-screen bg-gradient-to-br from-gray-900 to-black text-white p-6 overflow-hidden"
       >
         {/* Animated Background Elements */}
-        <div className="fixed inset-0 z-0">
+        {/* <div className="fixed inset-0 z-0">
           <div className="absolute inset-0 bg-[radial-gradient(circle,rgba(128,90,213,0.1)_1px,transparent_1px)] bg-[length:30px_30px]"></div>
           {[...Array(12)].map((_, i) => (
             <motion.div
@@ -238,7 +232,7 @@ const TEventDetails = () => {
               transition: "bottom 0.3s ease-out, right 0.3s ease-out",
             }}
           />
-        </div>
+        </div> */}
 
         {/* Back Button */}
         <motion.button
@@ -247,8 +241,7 @@ const TEventDetails = () => {
           transition={{ duration: 0.5 }}
           className="flex items-center space-x-2 text-gray-400 hover:text-white mb-6 transition-colors cursor-pointer pointer-events-auto z-10"
           onClick={() => {
-            // console.log("Back button clicked");
-            navigate("/"); // Use a direct route for testing
+            navigate(-1); // Use a direct route for testing
           }}
         >
           <ArrowLeft className="w-4 h-4" />
@@ -474,8 +467,10 @@ const TEventDetails = () => {
           </motion.div>
         </div>
       </div>
+      <Footer />
+
     </>
   );
 };
 
-export default TEventDetails;
+export default EventDetail;

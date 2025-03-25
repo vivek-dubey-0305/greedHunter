@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import Footer from '../components/Footer';
 
 const SupportUsPage = () => {
   const [donationAmount, setDonationAmount] = useState('25');
@@ -28,6 +29,7 @@ const SupportUsPage = () => {
   };
   
   return (
+    <>
     <div className="min-h-screen bg-black text-white">
 
       
@@ -182,15 +184,20 @@ const SupportUsPage = () => {
               
               <div className="space-y-6">
                 <div className="border-l-4 border-purple-600 pl-4">
-                  <h3 className="text-lg font-semibold text-purple-400 mb-2">Exposing Corporate Wrongdoing</h3>
-                  <p className="text-gray-400">Your support helps us investigate and expose corporations that harm consumers and communities.</p>
+                  <h3 className="text-lg font-semibold text-purple-400 mb-2">Study Resources</h3>
+                  <p className="text-gray-400">Create and maintain free learning materials for students.</p>
                 </div>
                 
                 <div className="border-l-4 border-purple-600 pl-4">
-                  <h3 className="text-lg font-semibold text-purple-400 mb-2">Advocating for Change</h3>
-                  <p className="text-gray-400">We push for stronger regulations and accountability in the business world.</p>
+                  <h3 className="text-lg font-semibold text-purple-400 mb-2">Scholarships</h3>
+                  <p className="text-gray-400">Support underprivileged students in accessing education.</p>
                 </div>
                 
+                <div className="border-l-4 border-purple-600 pl-4">
+                  <h3 className="text-lg font-semibold text-purple-400 mb-2">Platform Development</h3>
+                  <p className="text-gray-400">Improve and maintain our learning platforms.</p>
+                    </div>
+                    
                 <div className="border-l-4 border-purple-600 pl-4">
                   <h3 className="text-lg font-semibold text-purple-400 mb-2">Educational Initiatives</h3>
                   <p className="text-gray-400">We create resources to help consumers understand their rights and make informed choices.</p>
@@ -199,10 +206,10 @@ const SupportUsPage = () => {
                 <div className="bg-gray-800 p-4 rounded-md mt-8">
                   <h3 className="text-lg font-semibold text-yellow-400 mb-2">Our Impact</h3>
                   <ul className="list-disc list-inside text-gray-400 space-y-2">
-                    <li>Exposed 12 major corporate scandals in 2024</li>
-                    <li>Helped secure $42M in consumer restitution</li>
-                    <li>Supported legislation leading to 3 new consumer protection laws</li>
-                    <li>Published 28 investigative reports</li>
+                    <li>Provided 500+ free course accesses</li>
+                    {/* <li>Helped secure $42M in consumer restitution</li> */}
+                    <li>Launched 3 new study programs</li>
+                    <li>Supported 20 student projects</li>
                   </ul>
                 </div>
                 
@@ -215,7 +222,7 @@ const SupportUsPage = () => {
                           <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm4.59-12.42L10 14.17l-2.59-2.58L6 13l4 4 8-8z"></path>
                         </svg>
                       </span>
-                      Volunteer Your Time
+                      Volunteer as a tutor
                     </a>
                     <a href="#" className="flex items-center text-gray-300 hover:text-yellow-400">
                       <span className="bg-gray-800 p-2 rounded-full mr-3">
@@ -231,7 +238,15 @@ const SupportUsPage = () => {
                           <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm4.59-12.42L10 14.17l-2.59-2.58L6 13l4 4 8-8z"></path>
                         </svg>
                       </span>
-                      Corporate Partnerships
+                      Share learning resources
+                    </a>
+                    <a href="#" className="flex items-center text-gray-300 hover:text-yellow-400">
+                      <span className="bg-gray-800 p-2 rounded-full mr-3">
+                        <svg className="w-4 h-4 text-yellow-400" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm4.59-12.42L10 14.17l-2.59-2.58L6 13l4 4 8-8z"></path>
+                        </svg>
+                      </span>
+                      Suggest improvements
                     </a>
                   </div>
                 </div>
@@ -241,7 +256,7 @@ const SupportUsPage = () => {
         )}
         
         {/* Donor Recognition */}
-        <div className="mt-16">
+        {/* <div className="mt-16">
           <h2 className="text-2xl font-bold text-center mb-8">
             <span className="text-purple-600">Our</span> 
             <span className="text-yellow-400"> Supporters</span>
@@ -292,11 +307,13 @@ const SupportUsPage = () => {
               </div>
             </div>
           </div>
-        </div>
+        </div> */}
       </main>
       
 
     </div>
+          <Footer />
+          </>
   );
 };
 

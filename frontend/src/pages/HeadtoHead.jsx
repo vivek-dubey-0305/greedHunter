@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import { BarChart, XAxis, YAxis, Tooltip, Bar, ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
 import Loader from "../components/Loader";
 import { apiLeaderboard, apiUser } from "../services/api";
+import Footer from "../components/Footer";
 
 const HeadToHeadPage = () => {
   const [users, setUsers] = useState([]);
@@ -40,6 +41,7 @@ const HeadToHeadPage = () => {
   const COLORS = ["#facc15", "#9333ea"]; // Yellow & Purple
 
   return (
+    <>
     <div className="min-h-screen bg-gray-900 text-white p-10">
       <h1 className="text-4xl font-bold text-center text-yellow-400 mb-6">⚔️ Head-to-Head Comparison</h1>
       <div className="flex justify-center mb-6">
@@ -102,7 +104,9 @@ const HeadToHeadPage = () => {
           </div>
         )
       )}
-    </div>
+      </div>
+      <Footer />
+      </>
   );
 };
 

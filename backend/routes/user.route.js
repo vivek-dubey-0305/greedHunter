@@ -1,5 +1,5 @@
 import express from "express";
-import { changeCurrentPassword, completeProfile, deleteUser, enrollUserInEvent, getAllEvents, getEventById, getQuizBySubCategory, getUSer, getUsers, login, logout, refreshAccessToken, register, resetPassword, sendMailTotopTen, snedLink, snedOTP, updateMarks, updateProfile, userContactMail, verifyOTP } from "../controllers/user.controller.js";
+import { changeCurrentPassword, completeProfile, deleteUser, enrollUserInEvent, getAllEvents, getEventById, getHomepageStats, getQuizBySubCategory, getUSer, getUsers, login, logout, refreshAccessToken, register, resetPassword, sendMailTotopTen, snedLink, snedOTP, updateMarks, updateProfile, userContactMail, verifyOTP } from "../controllers/user.controller.js";
 import { verifyJWT } from "../middleware/auth.middleware.js";
 
 
@@ -42,6 +42,9 @@ router.route("/getAllEvents").get(getAllEvents)
 
 router.route("/sendMailToTopTen").get(sendMailTotopTen)
 router.route("/sendMailToHunter").post(userContactMail)
+
+
+router.route("/homepage-stats").get(getHomepageStats)
 
 
 export default router;

@@ -6,12 +6,13 @@ import Footer from "../components/Footer";
 // import Header from "../components/Header";
 import { useUserContext } from "../context/UserContext";
 import ProfilePopup from "../components/Popup";
+import CameraDetection from "../components/Camera";
 // import ProfilePopup from "../components/ProfilePopup";
 
 const LandingPage = () => {
   const navigate = useNavigate();
 
-  const {category, eventCategory, subcategory, eventId} = useParams()
+  const { category, eventCategory, subcategory, eventId } = useParams();
 
   const quizStartTime = new Date();
   quizStartTime.setDate(8);
@@ -21,6 +22,7 @@ const LandingPage = () => {
 
   const [timeLeft, setTimeLeft] = useState(getTimeRemaining());
   const [isTimeUp, setIsTimeUp] = useState(false);
+  const [showCameraPopup, setShowCameraPopup] = useState(false)
   const [memoryCards, setMemoryCards] = useState([]);
   const [flippedCards, setFlippedCards] = useState([]);
   const [matchedPairs, setMatchedPairs] = useState([]);
@@ -29,7 +31,11 @@ const LandingPage = () => {
   const [answerStatus, setAnswerStatus] = useState(null);
   const [numberGuess, setNumberGuess] = useState("");
 
+  
+
   const [showPopup, setShowPopup] = useState(false);
+
+  const [changeButton, setChangeButton] = useState(false);
 
   const { user } = useUserContext();
   const [numberGuessStatus, setNumberGuessStatus] = useState(null);
@@ -38,6 +44,29 @@ const LandingPage = () => {
     memory: false,
     number: false,
   });
+
+  const handleOpenCameraPopup = () => {
+    setShowCameraPopup(true);
+  };
+
+  const handleCloseCameraPopup = () => {
+    setShowCameraPopup(false);
+  };
+
+  useEffect(() => {
+    const hasPlayed = user?.enrolledEvents.some(
+      (event) =>
+        event.category === category &&
+        event.subcategory === subcategory &&
+        String(event.eventId) === String(eventId) && // Convert both to string
+        event.isPlayed === true
+    );
+    // console.log(first)
+
+    if (hasPlayed) setChangeButton(true);
+
+    console.log("User has played:", hasPlayed);
+  }, [user, category, subcategory, eventId]);
 
   const sanskritQuestions = [
     {
@@ -250,13 +279,24 @@ const LandingPage = () => {
       //   showPopup && <ProfilePopup onClose={() => setShowPopup(false)} />;
       // }
     } else {
-      navigate(`/greed-quiz-hunt-00/${category}/${eventCategory}/${subcategory}/${eventId}`);
+      if (changeButton) {
+        console.log("Navigatinf!!")
+        navigate(`/quiz-result-waiting/${category}/${eventCategory}/${subcategory}/${eventId}`);
+      } else {
+        console.log("Greed!!")
+
+        navigate(
+          `/greed-quiz-hunt-00/${category}/${eventCategory}/${subcategory}/${eventId}`
+        );
+      }
     }
   };
   return (
     <>
       {/* <Header /> */}
-      <div className="w-full min-h-screen bg-gradient-to-r from-gray-800 to-gray-950 text-white">
+      <div className="w-full min-h-screen bg-gradient-to-r from-gray-800 to-gray-950 text-white flex items-center justify-center">
+        {showCameraPopup ? <CameraDetection onClose={handleCloseCameraPopup} isTest={true}/> :
+
         <div className="h-full">
           <div className="text-center p-8 relative">
             <h1 className="text-5xl font-bold mb-4 text-purple-500 animate-none">
@@ -268,7 +308,8 @@ const LandingPage = () => {
           </p> */}
           </div>
 
-          <div className="flex justify-center mb-8">
+          <div className="flex items-center justify-between">
+          <div className="flex justify-center mb-8 mr-7">
             <div className="bg-gradient-to-r from-gray-800 to-gray-950 p-6 rounded-lg shadow-lg backdrop-blur-sm w-auto">
               <div className="text-2xl font-semibold text-purple-500">
                 परीक्षा प्रारम्भः
@@ -278,6 +319,25 @@ const LandingPage = () => {
                 {timeLeft.seconds}s
               </div>
             </div>
+          </div>
+
+          {/* Test Camera */}
+          <div className="flex justify-center mb-8">
+            <div className="bg-gradient-to-r from-gray-800 to-gray-950 p-6 rounded-lg shadow-lg backdrop-blur-sm w-auto">
+                <button className="cursor-pointer text-2xl font-semibold text-purple-500"
+                onClick={handleOpenCameraPopup}
+                >
+                Test Camera
+              </button>
+              {/* <div className="text-xl text-center text-purple-400 animate-pulse">
+                {timeLeft.days}d {timeLeft.hours}h {timeLeft.minutes}m{" "}
+                {timeLeft.seconds}s
+              </div> */}
+            </div>
+          </div>
+
+
+
           </div>
 
           <div className="max-w-6xl mx-auto p-4 grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -419,13 +479,19 @@ const LandingPage = () => {
                   : "bg-gray-600 cursor-not-allowed"
               }`}
             >
-              {isTimeUp ? "प्रवेश करें" : "पंजीकरण शीघ्र"}
+              {
+                changeButton ? 
+                isTimeUp? "See Result": "Result Soon" :
+                   isTimeUp? "प्रवेश करें": "पंजीकरण शीघ्र"  
+                  
+              }
             </button>
             {showPopup && <ProfilePopup onClose={() => setShowPopup(false)} />}
           </div>
         </div>
-        <Footer />
+}
       </div>
+        <Footer />
     </>
   );
 };
