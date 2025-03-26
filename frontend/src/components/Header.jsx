@@ -143,7 +143,7 @@ const Header = () => {
             <Link to="/" className="hover:text-gray-300 mr-7">
               Home
             </Link>
-            <Link to="/platform/about us" className="hover:text-gray-300 mr-7">
+            <Link to="/platform/about-us" className="hover:text-gray-300 mr-7">
               About Us
             </Link>
 
@@ -233,7 +233,7 @@ const Header = () => {
               </div>
             ))} */}
 
-            <Link to="/platform/contact us" className="hover:text-gray-300">
+            <Link to="/platform/contact-us" className="hover:text-gray-300">
               Contac Us
             </Link>
             <Link
@@ -344,14 +344,14 @@ const Header = () => {
                   Home
                 </Link>
                 <Link
-                  to="/platform/about us"
+                  to="/platform/about-us"
                   onClick={() => setIsMenuOpen(false)}
                   className="w-full flex justify-between items-center p-3 hover:bg-gray-800 rounded-lg"
                 >
                   About us
                 </Link>
                 <Link
-                  to="/platform/contact us"
+                  to="/platform/contact-us"
                   onClick={() => setIsMenuOpen(false)}
                   className="w-full flex justify-between items-center p-3 hover:bg-gray-800 rounded-lg"
                 >

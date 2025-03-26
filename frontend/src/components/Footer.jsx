@@ -1,4 +1,14 @@
-import { Instagram, Mail, Phone, Mountain, Linkedin, HelpCircle, Users, FileText, Heart } from "lucide-react";
+import {
+  Instagram,
+  Mail,
+  Phone,
+  Mountain,
+  Linkedin,
+  HelpCircle,
+  Users,
+  FileText,
+  Heart,
+} from "lucide-react";
 import deviImage from "/Complete-hands.png";
 
 const Footer = () => {
@@ -94,38 +104,75 @@ const Footer = () => {
             <span className="p-2 bg-gray-800 rounded-full group-hover:bg-yellow-500 transition-colors">
               <HelpCircle className="h-4 w-4 text-white" />
             </span>
-            <span className="text-gray-300 group-hover:text-yellow-300 transition-colors">FAQ</span>
+            <span className="text-gray-300 group-hover:text-yellow-300 transition-colors">
+              FAQ
+            </span>
           </a>
-          
-          <a href="/platform/contact us" className="flex items-center gap-2 group">
+
+          <a
+            href="/platform/contact-us"
+            className="flex items-center gap-2 group"
+          >
             <span className="p-2 bg-gray-800 rounded-full group-hover:bg-blue-500 transition-colors">
               <Phone className="h-4 w-4 text-white" />
             </span>
-            <span className="text-gray-300 group-hover:text-blue-300 transition-colors">Contact Us</span>
+            <span className="text-gray-300 group-hover:text-blue-300 transition-colors">
+              Contact Us
+            </span>
           </a>
-          
-          <a href="/platform/about us" className="flex items-center gap-2 group">
+
+          <a
+            href="/platform/about-us"
+            className="flex items-center gap-2 group"
+          >
             <span className="p-2 bg-gray-800 rounded-full group-hover:bg-purple-500 transition-colors">
               <Users className="h-4 w-4 text-white" />
             </span>
-            <span className="text-gray-300 group-hover:text-purple-300 transition-colors">About Us</span>
+            <span className="text-gray-300 group-hover:text-purple-300 transition-colors">
+              About Us
+            </span>
           </a>
-          
-          <a href="/platform/privacy policy" className="flex items-center gap-2 group">
+
+          <a
+            href="/platform/privacy-policy"
+            className="flex items-center gap-2 group"
+          >
             <span className="p-2 bg-gray-800 rounded-full group-hover:bg-green-500 transition-colors">
               <FileText className="h-4 w-4 text-white" />
             </span>
-            <span className="text-gray-300 group-hover:text-green-300 transition-colors">Privacy Policy</span>
+            <span className="text-gray-300 group-hover:text-green-300 transition-colors">
+              Privacy Policy
+            </span>
           </a>
-          
-          <a href="/platform/Terms and conditions" className="flex items-center gap-2 group">
+
+          <a
+            href="/platform/about-refund-policy"
+            className="flex items-center gap-2 group"
+          >
             <span className="p-2 bg-gray-800 rounded-full group-hover:bg-red-700 transition-colors">
               <FileText className="h-4 w-4 text-white" />
             </span>
-            <span className="text-gray-300 group-hover:text-red-400 transition-colors">T&C</span>
+            <span className="text-gray-300 group-hover:text-red-400 transition-colors">
+              Refund Policy
+            </span>
           </a>
-          
-          <a href="/platform/support us" className="flex items-center gap-2 group px-4 py-2 bg-gradient-to-r from-purple-600 to-pink-500 rounded-full hover:from-pink-500 hover:to-purple-600 transition-all">
+
+          <a
+            href="/platform/Terms-and-conditions"
+            className="flex items-center gap-2 group"
+          >
+            <span className="p-2 bg-gray-800 rounded-full group-hover:bg-red-700 transition-colors">
+              <FileText className="h-4 w-4 text-white" />
+            </span>
+            <span className="text-gray-300 group-hover:text-red-400 transition-colors">
+              T&C
+            </span>
+          </a>
+
+          <a
+            href="/platform/support-us"
+            className="flex items-center gap-2 group px-4 py-2 bg-gradient-to-r from-purple-600 to-pink-500 rounded-full hover:from-pink-500 hover:to-purple-600 transition-all"
+          >
             <Heart className="h-4 w-4 text-white" />
             <span className="text-white font-medium">Support Us</span>
           </a>

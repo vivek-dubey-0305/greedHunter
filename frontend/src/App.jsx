@@ -19,6 +19,7 @@ import SendMailtoTopTen from "./pages/SendMailtoTopTen";
 import Dashboard from "./pages/DashboardPage";
 import CameraDetection from "./components/Camera";
 import ResultWaitingPage from "./pages/ResultWaitingPage";
+import CancellationRefund from "./pages/Refund";
 
 // Lazy Loading Pages
 const QuizPage = lazy(() => import("./pages/QuizPage"));
@@ -177,7 +178,6 @@ const App = () => {
             />
           )}
 
-          <Route path="/platform/faq" element={<FAQPage />} />
           <Route
             path={`/greed userform/hunter creation/:randomUniqueCode`}
             element={<UserForm />}
@@ -207,21 +207,20 @@ const App = () => {
               </EventProvider>
             }
           />
-          <Route path="/platform/support us" element={<SupportUsPage />} />
-          <Route
-            path="/platform/privacy policy"
-            element={<PrivacyPolicyPage />}
-          />
+
+
+            <Route path="/platform/faq" element={<FAQPage />} />
+          <Route path="/platform/contact-us" element={<ContactUs />} />
+          <Route path="/platform/about-us" element={<AboutUs />} />
+          <Route path="/platform/privacy-policy" element={<PrivacyPolicyPage />}/>
+          <Route path="/platform/Terms-and-conditions" element={<TermsAndConditionsPage />}/>
+          <Route path="/platform/support-us" element={<SupportUsPage />} />
+          <Route path="/platform/about-refund-policy" element={<CancellationRefund />} />
+
 
 
           <Route path="/userStats" element={<UserStats />} />
           <Route path="/head-to-head" element={<HeadToHeadPage />} />
-          <Route path="/platform/about us" element={<AboutUs />} />
-          <Route path="/platform/contact us" element={<ContactUs />} />
-          <Route
-            path="/platform/Terms and conditions"
-            element={<TermsAndConditionsPage />}
-          />
 
           <Route path="/abcdddds" element={<SendMailtoTopTen />} />
           <Route path="/camera" element={<CameraDetection />} />
