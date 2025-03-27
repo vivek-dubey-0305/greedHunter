@@ -38,9 +38,9 @@ const userSchema = new Schema(
                 eventCategory: { type: Schema.Types.ObjectId, ref: "EventCategory" },  // ✅ References EventCategory
                 category: { type: String, required: true },  // ✅ Stores subcategory name
                 subcategory: { type: String, required: true },  // ✅ Stores subcategory name
+                eventId: { type: Schema.Types.ObjectId, required: true, },  // ✅ Stores event reference
                 startTime: { type: Date, required: true },
                 Location:{type:String},
-                eventId: { type: Schema.Types.ObjectId, required: true, },  // ✅ Stores event reference
                 isPlayed: { type: Boolean, default: false },  // ✅ User-specific data
                 marks: { type: Number, default: 0 },  // ✅ User-specific data
                 rank: { type: Number, default: 0 },  // ✅ User-specific data

@@ -22,13 +22,23 @@ import { testimonials } from "../utils/data.js";
 import { randomUniqueCode } from "../utils/securedRoutes.js";
 import axios from "axios";
 
+import { io } from "socket.io-client";
+
+const socket = io("http://localhost:8000", { transports: ["websocket"] });
+
+
 const HeroSection = () => {
+
+  const [newUsers, setNewUsers] = useState([]);
+
   const { getUsers, user } = useUserContext();
   const [topUsers, setTopUsers] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+  // const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [cursorHover, setCursorHover] = useState(false);
-  const heroRef = useRef(null);
+  // const heroRef = useRef(null);
+
+
 
   const { getEvents } = useEventContext();
   const navigate = useNavigate();
@@ -50,24 +60,56 @@ const HeroSection = () => {
         .toLowerCase()
     )
     .join("");
+  
+  
+  //registere socket
+  useEffect(() => {
+    // Listen for new user registration events
+    socket.on("newUserRegistered", ({ username, fullName }) => {
+        console.log(`New user registered: ${fullName}`);
+
+        // Add new user to state
+        setNewUsers((prev) => [...prev, username]);
+
+        // Speak the username
+        speakText(`${fullName} has entered the GreedWeb`);
+    });
+
+    return () => {
+        socket.off("newUserRegistered");
+    };
+}, []);
+
+// Function to Speak Text using Web Speech API
+const speakText = (text) => {
+    if ("speechSynthesis" in window) {
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = "en-US";
+        utterance.rate = 1;
+        window.speechSynthesis.speak(utterance);
+    } else {
+        console.warn("Text-to-Speech not supported in this browser.");
+    }
+};
+
 
   // Handle mouse movement for parallax effect
-  useEffect(() => {
-    const handleMouseMove = (e) => {
-      if (heroRef.current) {
-        const { left, top, width, height } =
-          heroRef.current.getBoundingClientRect();
-        const x = (e.clientX - left) / width;
-        const y = (e.clientY - top) / height;
-        setMousePosition({ x, y });
-      }
-    };
+  // useEffect(() => {
+  //   const handleMouseMove = (e) => {
+  //     if (heroRef.current) {
+  //       const { left, top, width, height } =
+  //         heroRef.current.getBoundingClientRect();
+  //       const x = (e.clientX - left) / width;
+  //       const y = (e.clientY - top) / height;
+  //       setMousePosition({ x, y });
+  //     }
+  //   };
 
-    window.addEventListener("mousemove", handleMouseMove);
-    return () => {
-      window.removeEventListener("mousemove", handleMouseMove);
-    };
-  }, []);
+  //   window.addEventListener("mousemove", handleMouseMove);
+  //   return () => {
+  //     window.removeEventListener("mousemove", handleMouseMove);
+  //   };
+  // }, []);
 
   useEffect(() => {
     const fetchUsers = async () => {
@@ -80,21 +122,21 @@ const HeroSection = () => {
             highestEvent:
               usr.enrolledEvents?.reduce(
                 (max, event) =>
-                  event.marks > (max?.marks || 0) ||
-                  (event.marks === max?.marks && event.winTime < max?.winTime) // ✅ Sort by marks, then winTime
+                  event?.marks > (max?.marks || 0) ||
+                  (event?.marks === max?.marks && event?.winTime < max?.winTime) // ✅ Sort by marks, then winTime
                     ? event
                     : max,
                 {}
               ) || {},
           }))
-          .filter((usr) => usr.highestEvent.marks !== undefined) // Remove users without marks
+          .filter((usr) => usr?.highestEvent?.marks !== undefined) // Remove users without marks
           .sort((a, b) => {
-            if ((b.highestEvent.marks || 0) !== (a.highestEvent.marks || 0)) {
-              return (b.highestEvent.marks || 0) - (a.highestEvent.marks || 0); // Highest marks first
+            if ((b?.highestEvent?.marks || 0) !== (a?.highestEvent?.marks || 0)) {
+              return (b?.highestEvent?.marks || 0) - (a?.highestEvent?.marks || 0); // Highest marks first
             } else {
               return (
-                (a.highestEvent.winTime || Infinity) -
-                (b.highestEvent.winTime || Infinity)
+                (a?.highestEvent?.winTime || Infinity) -
+                (b?.highestEvent?.winTime || Infinity)
               ); // Least time wins
             }
           })
@@ -223,7 +265,7 @@ const HeroSection = () => {
 
         {/* Hero Section */}
         <section
-          ref={heroRef}
+          // ref={heroRef}
           className="relative h-screen flex flex-col justify-center items-center text-center p-6 z-10 overflow-hidden"
         >
           {/* Animated Gradient Orbs */}
@@ -281,6 +323,18 @@ const HeroSection = () => {
               <ArrowRight className="w-5 h-5 transform group-hover:translate-x-1 transition-transform" />
             </motion.button>
           </motion.div>
+
+           {/* 🔥 Live New User Registration Display */}
+           <div className="absolute top-10 left-10 bg-gray-800/80 p-4 rounded-lg shadow-lg">
+                <h3 className="text-lg font-bold text-yellow-400">🔥 New Users</h3>
+                <ul className="mt-2 text-white text-sm">
+                    {newUsers.slice(-5).map((user, index) => (
+                        <li key={index} className="animate-fadeIn">
+                            {user} has joined!
+                        </li>
+                    ))}
+                </ul>
+            </div>
 
           {/* Top Winners Card */}
           {/* <motion.div

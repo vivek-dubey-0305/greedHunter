@@ -878,9 +878,9 @@ const LeaderBoardPage = () => {
     return users.filter((user) => {
       const searchLower = searchQuery.toLowerCase();
       return (
-        user.fullName.toLowerCase().includes(searchLower) ||
-        user.enrollmentNumber?.toLowerCase().includes(searchLower) ||
-        user.rollNumber?.toLowerCase().includes(searchLower)
+        user?.fullName?.toLowerCase().includes(searchLower) ||
+        user?.enrollmentNumber?.toLowerCase().includes(searchLower) ||
+        user?.rollNumber?.toLowerCase().includes(searchLower)
       );
     });
   };
@@ -893,20 +893,20 @@ const LeaderBoardPage = () => {
       setUsers((prevUsers) => {
         const updatedUsers = [...prevUsers];
         const existingUserIndex = updatedUsers.findIndex(
-          (usr) => usr.enrollmentNumber === data.updatedUser.enrollmentNumber
+          (usr) => usr.enrollmentNumber === data?.updatedUser?.enrollmentNumber
         );
 
         if (existingUserIndex !== -1) {
           // Full replacement of highest event
           updatedUsers[existingUserIndex] = {
             ...updatedUsers[existingUserIndex],
-            highestEvent: data.updatedUser.highestEvent,
+            highestEvent: data?.updatedUser?.highestEvent,
           };
         } else {
           updatedUsers.push({
-            fullName: data.updatedUser.fullName,
-            enrollmentNumber: data.updatedUser.enrollmentNumber,
-            highestEvent: data.updatedUser.highestEvent,
+            fullName: data?.updatedUser?.fullName,
+            enrollmentNumber: data?.updatedUser?.enrollmentNumber,
+            highestEvent: data?.updatedUser?.highestEvent,
           });
         }
 

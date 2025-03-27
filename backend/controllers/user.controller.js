@@ -141,27 +141,30 @@ const register = asyncHandler(async (req, res, next) => {
         user.refreshToken = refreshToken;
 
 
-        const OTP = await user.generateVerificationCode()
+        // const OTP = await user.generateVerificationCode()
         // await user.save()
         // console.log("OTP: ", OTP)
 
-        try {
+        // try {
 
-            const message = generateEmailTemplate(OTP);
-            const mailRes = await sendEmail({
-                email,
-                subject: "YOUR VERIFICATION CODE",
-                message
-            })
-            console.log("MailResponse", mailRes)
-        } catch (error) {
-            console.log("Email Error:\n", error || error.message)
-            return next(new ErrorHandler(`Unable to send email to ${email}\n Error ${error.message || error}`, 400))
-            // throw new ErrorHandler("Failed to send verification Code", 500)
-        }
+        //     const message = generateEmailTemplate(OTP);
+        //     const mailRes = await sendEmail({
+        //         email,
+        //         subject: "YOUR VERIFICATION CODE",
+        //         message
+        //     })
+        //     console.log("MailResponse", mailRes)
+        // } catch (error) {
+        //     console.log("Email Error:\n", error || error.message)
+        //     return next(new ErrorHandler(`Unable to send email to ${email}\n Error ${error.message || error}`, 400))
+        //     // throw new ErrorHandler("Failed to send verification Code", 500)
+        // }
 
 
         await user.save({ validateBeforeSave: false });
+
+        // ...io
+        io.emit("newUserRegistered", { username, fullName });
 
         const options = {
             httpOnly: true,
